@@ -44,4 +44,31 @@ def leerElemento(y:Int, x:Int, matriz:List[List[Int]]):Int =
 
 leerElemento(7,6,matriz)
 
-def intercambiar(y1:Int, x1:Int, y2:Int, x2:Int, matriz:List[List[Int]]):List[List[Int]] =
+@tailrec
+def imprimirFila(fila:List[Int]):Unit =
+  if(fila.nonEmpty){
+    print(fila.head)
+    print(" ")
+    imprimirFila(fila.tail)
+  }
+
+imprimirFila(leerFila(4,matriz))
+
+@tailrec
+def imprimirMatriz(matriz:List[List[Int]]):Unit =
+  if(matriz.nonEmpty) {
+    imprimirFila(leerFila(0,matriz))
+    print("\n")
+    imprimirMatriz(matriz.tail)
+  }
+
+imprimirMatriz(matriz)
+
+def intercambiar(x1:Int, y1:Int, x2:Int, y2:Int, matriz:List[List[Int]]):List[List[Int]] =
+  if(y1 == 0 && y2 == 0){
+
+  }
+  else{
+
+  }
+
