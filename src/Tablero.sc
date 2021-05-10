@@ -92,10 +92,34 @@ def intercambiar(xizq:Int, yizq:Int, matriz:List[List[Int]]):List[List[Int]] =
 
 var matriz: List[List[Int]] = List(List(4, 6, 7, 8, 0, 0, 3, 6), List(1, 0, 8, 2, 2, 4, 1, 0), List(0, 1, 6, 0, 8, 2, 3, 3), List(8, 6, 2, 0, 1, 1, 0, 1), List(5, 4, 7, 8, 3, 8, 1, 4), List(1, 5, 7, 0, 8, 4, 6, 6), List(7, 3, 5, 4, 7, 6, 1, 1), List(4, 6, 0, 3, 4, 6, 1, 0), List(3, 8, 5, 0, 3, 0, 3, 5))
 
+def insertarEnFila(posicion:Int, numero:Int, lista:List[Int]):List[Int] =
+  if(posicion == 0)
+    numero :: lista.tail
+  else
+    lista.head :: insertarEnFila(posicion - 1, numero, lista.tail)
+
+insertarEnFila(2,99,matriz.head)
+
+//Y son las filas, indice comienza en 1
+def recalcularTableroAux(x:Int, y:Int, indice:Int, matriz:List[List[Int]], matrizActual:List[List[Int]]):List[List[Int]] = {
+  if (y == indice)
+    insertarEnFila(x+2, leerElemento(y-1, x+2, matriz), insertarEnFila(x+1,leerElemento(y-1, x+1, matriz),insertarEnFila(x,leerElemento(y-1, x, matriz),matrizActual.head))) :: matrizActual.tail
+  else
+    insertarEnFila(x+2, leerElemento(indice-1, x+2, matriz), insertarEnFila(x+1,leerElemento(indice-1, x+1, matriz),insertarEnFila(x,leerElemento(indice-1, x, matriz),matrizActual.head))) :: recalcularTableroAux(x,y,indice+1,matriz, matrizActual.tail)
+}
+
+def recalcularTablero(x:Int, y:Int, matriz:List[List[Int]]) = {
+  var matriz2 = insertarEnFila(x+2, r.nextInt(9), insertarEnFila(x+1,r.nextInt(9),insertarEnFila(x,r.nextInt(9),matriz.head))) :: matriz.tail
+  if (y != 0){
+    matriz2.head :: recalcularTableroAux(x, y, 1, matriz, matriz2.tail)
+  }
+  else{
+    matriz2
+  }
+}
+
 imprimirMatriz(matriz)
 println("----------------")
-imprimirMatriz(intercambiar(0,0,matriz))
-println("----------------")
-imprimirMatriz(intercambiar(3,3,matriz))
-println("----------------")
-imprimirMatriz(intercambiar(6,8,matriz))
+//imprimirMatriz(recalcularTablero(5,0,matriz))
+//println("----------------")
+imprimirMatriz(recalcularTablero(3,3,matriz))
