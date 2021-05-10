@@ -117,6 +117,22 @@ def recalcularTablero(x:Int, y:Int, matriz:List[List[Int]]) = {
     matriz2
   }
 }
+def iguales(x: Int,y: Int,z:Int):Boolean ={
+  if ((x == y) && (x == z))  true
+  else false
+}
+@tailrec
+def comprobarIgualesFila(fila:List[Int],columna:Int): Int={
+  if (fila.length<3) -1
+  else if (iguales(fila.head, fila(1), fila(2))) columna
+  else comprobarIgualesFila(fila.tail,columna+1)
+}
+@tailrec
+def comprobarIgualesTablero(matriz:List[List[Int]],fila:Int):List[Int]={
+  if (matriz.isEmpty) Nil
+  else if (comprobarIgualesFila(matriz.head,0)>=0) List(fila,comprobarIgualesFila(matriz.head,0))
+  else comprobarIgualesTablero(matriz.tail,fila+1)
+}
 
 imprimirMatriz(matriz)
 println("----------------")
