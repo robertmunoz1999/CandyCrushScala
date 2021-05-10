@@ -2,66 +2,83 @@ import scala.annotation.tailrec
 import scala.util.Random
 import scala.io.StdIn.readLine
 
-val r: Random.type = scala.util.Random
 
-@tailrec
-def crearLista(lista:List[Int], longitud:Int):List[Int] =
-  if(longitud==0)
-    lista
-  else
-    crearLista(r.nextInt(9)::lista, longitud - 1)
+object crush {
+  def main(args: Array[String]): Unit = {
 
-//crearLista(List[Int](),8)
+    val r: Random.type = scala.util.Random
 
-@tailrec
-def crearTablero(lista:List[List[Int]], filas:Int):List[List[Int]] =
-    if(filas==0)
+
+    @tailrec
+    def crearLista(lista: List[Int], longitud: Int): List[Int] =
+      if (longitud == 0)
         lista
-    else
-        crearTablero(crearLista(List[Int](),8)::lista,filas-1)
+      else
+        crearLista(r.nextInt(9) :: lista, longitud - 1)
 
-var matriz = crearTablero(List[List[Int]](),9)
+    //crearLista(List[Int](),8)
 
-@tailrec
-def leerFila(fila:Int, lista:List[List[Int]]):List[Int] =
-    if(fila == 0)
+
+    @tailrec
+    def crearTablero(lista: List[List[Int]], filas: Int): List[List[Int]] =
+      if (filas == 0)
+        lista
+      else
+        crearTablero(crearLista(List[Int](), 8) :: lista, filas - 1)
+
+    //var matriz = crearTablero(List[List[Int]](),9) //DESCOMENTAR PARA CREAR ALEATORIO
+
+
+    @tailrec
+    def leerFila(fila: Int, lista: List[List[Int]]): List[Int] =
+      if (fila == 0)
         lista.head
-    else
+      else
         leerFila(fila - 1, lista.tail)
 
-//leerFila(4,matriz)
+    //leerFila(4,matriz)
 
-@tailrec
-def leerElementoDeFila(elemento:Int, lista:List[Int]):Int =
-    if(elemento==0)
+
+    @tailrec
+    def leerElementoDeFila(elemento: Int, lista: List[Int]): Int =
+      if (elemento == 0)
         lista.head
-    else
+      else
         leerElementoDeFila(elemento - 1, lista.tail)
 
-//leerElementoDeFila(2,List[Int](1,2,3,4))
+    //leerElementoDeFila(2,List[Int](1,2,3,4))
 
-def leerElemento(y:Int, x:Int, matriz:List[List[Int]]):Int =
-    leerElementoDeFila(x,leerFila(y,matriz))
+    def leerElemento(y: Int, x: Int, matriz: List[List[Int]]): Int =
+      leerElementoDeFila(x, leerFila(y, matriz))
 
-//leerElemento(7,6,matriz)
+    //leerElemento(7,6,matriz)
 
-@tailrec
-def imprimirFila(fila:List[Int]):Unit =
-  if(fila.nonEmpty){
-    print(fila.head)
-    print(" ")
-    imprimirFila(fila.tail)
-  }
 
-//imprimirFila(leerFila(4,matriz))
+    @tailrec
+    def imprimirFila(fila: List[Int]): Unit = {
+      if (fila.nonEmpty) {
+        print(fila.head)
+        print(" ")
+        imprimirFila(fila.tail)
 
-@tailrec
-def imprimirMatriz(matriz:List[List[Int]]):Unit =
-  if(matriz.nonEmpty) {
-    imprimirFila(leerFila(0,matriz))
-    print("\n")
-    imprimirMatriz(matriz.tail)
-  }
+      }
+    }
+
+    //imprimirFila(leerFila(4,matriz))
+
+    @tailrec
+    def imprimirMatriz1(matriz: List[List[Int]]): Unit =
+      if (matriz.nonEmpty) {
+        imprimirFila(leerFila(0, matriz))
+        printf("║  %d", 9 - matriz.length % 10)
+        print("\n")
+        imprimirMatriz1(matriz.tail)
+      }
+
+    def imprimirMatriz(matriz: List[List[Int]]): Unit = {
+      imprimirMatriz1(matriz)
+      print("═ ═ ═ ═ ═ ═ ═ ═ ╝\n0 1 2 3 4 5 6 7 \n")
+    }
 
 
 //No se debe meter el borde derecho
@@ -93,16 +110,7 @@ def intercambiar(xizq:Int, yizq:Int, matriz:List[List[Int]]):List[List[Int]] =
     matriz.head :: intercambiar(xizq, yizq - 1, matriz.tail)
   }
 
-var matriz: List[List[Int]] = List(
-  List(4, 6, 6, 5, 0, 0, 3, 6),
-  List(1, 0, 8, 2, 2, 4, 1, 0),
-  List(0, 1, 6, 0, 8, 2, 3, 3),
-  List(8, 6, 2, 0, 1, 1, 0, 1),
-  List(5, 4, 7, 8, 3, 8, 1, 4),
-  List(1, 5, 7, 0, 8, 4, 6, 6),
-  List(7, 7, 8, 8, 7, 7, 7, 1),
-  List(4, 6, 0, 3, 4, 6, 1, 0),
-  List(3, 8, 5, 0, 3, 0, 3, 5))
+
 
 def insertarEnFila(posicion:Int, numero:Int, lista:List[Int]):List[Int] =
   if(posicion == 0)
@@ -110,7 +118,7 @@ def insertarEnFila(posicion:Int, numero:Int, lista:List[Int]):List[Int] =
   else
     lista.head :: insertarEnFila(posicion - 1, numero, lista.tail)
 
-insertarEnFila(2,99,matriz.head)
+//insertarEnFila(2,99,matriz.head)
 
 //Y son las filas, indice comienza en 1
 def recalcularTableroAux(x:Int, y:Int, indice:Int, matriz:List[List[Int]], matrizActual:List[List[Int]]):List[List[Int]] = {
@@ -133,18 +141,21 @@ def iguales(x: Int,y: Int,z:Int):Boolean ={
   if ((x == y) && (x == z))  true
   else false
 }
+
 @tailrec
-def comprobarIgualesFila(fila:List[Int],columna:Int): Int={
+def comprobarIgualesFila(fila:List[Int], columna:Int): Int={
   if (fila.length<3) -1
   else if (iguales(fila.head, fila(1), fila(2))) columna
   else comprobarIgualesFila(fila.tail,columna+1)
 }
+
 @tailrec
-def comprobarIgualesTablero(matriz:List[List[Int]],fila:Int):List[Int]={
+def comprobarIgualesTablero(matriz:List[List[Int]], fila:Int):List[Int]={
   if (matriz.isEmpty) Nil
   else if (comprobarIgualesFila(matriz.head,0)>=0) List(fila,comprobarIgualesFila(matriz.head,0))
   else comprobarIgualesTablero(matriz.tail,fila+1)
 }
+
 @tailrec
 def actualizarTablero(matriz:List[List[Int]]):List[List[Int]]={
   if(comprobarIgualesTablero(matriz,0)!= Nil) {
@@ -158,29 +169,54 @@ def actualizarTablero(matriz:List[List[Int]]):List[List[Int]]={
 
   }
   else{
+    println()
+    imprimirMatriz(matriz)
     print("Tablero sin repeticiones  \n")
     matriz
-    }
-}
-def leerrespuesta():Unit={
-  val respuesta = readLine()
-  printf (respuesta)
+  }
 }
 
-println("----------------")
-/*
-@tailrec
-def jugar(matriz:List[List[Int]]):Unit={
+
+
+
+
+def jugar(matriz:List[List[Int]])= {
   imprimirMatriz(matriz)
-  print("¿Jugar? \n")
+  print("¿Quieres jugar?             Si/No\n->")
   val respuesta = readLine()
-  if (respuesta=="Si") {
-    actualizarTablero(matriz)
-    jugar(actualizarTablero(matriz))
-  } else
-    printf("Gracias por jugar, adiós")
-}
 
- */
-//jugar(matriz)
-//println("----------------")
+  if (respuesta == "Si") {
+    val matrizAct = actualizarTablero(matriz)
+    quiereMoverFicha(matrizAct)
+  }
+  printf("Gracias por jugar, adiós")
+
+}
+def quiereMoverFicha(matriz:List[List[Int]]):List[List[Int]]={
+  printf("¿Quieres mover ficha?           Si/No\n->")
+  val respuesta1 = readLine()
+  if (respuesta1 == "Si") {
+    quiereMoverFicha(moverFicha(matriz))
+  }else matriz
+}
+def moverFicha (matriz:List[List[Int]]):List[List[Int]] ={
+  printf("Introduce la posicion para mover ficha:\n FILA:")
+  val fila = readLine()
+  printf("\n Columna:")
+  val columna = readLine()
+  actualizarTablero(intercambiar(columna.toInt, fila.toInt, matriz))
+}
+  var matriz: List[List[Int]] = List(
+    List(4, 6, 6, 5, 0, 0, 3, 6),
+    List(1, 0, 8, 2, 2, 4, 1, 0),
+    List(0, 1, 6, 0, 8, 2, 3, 3),
+    List(8, 6, 2, 0, 1, 1, 0, 1),
+    List(5, 4, 7, 8, 3, 8, 1, 4),
+    List(1, 5, 7, 0, 8, 4, 6, 6),
+    List(7, 7, 8, 8, 7, 7, 7, 1),
+    List(4, 6, 0, 3, 4, 6, 1, 0),
+    List(3, 8, 5, 0, 3, 0, 3, 3))
+
+jugar(matriz)
+
+}}
