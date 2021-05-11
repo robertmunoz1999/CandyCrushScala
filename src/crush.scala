@@ -67,16 +67,16 @@ object crush {
     //imprimirFila(leerFila(4,matriz))
 
     @tailrec
-    def imprimirMatriz1(matriz: List[List[Int]]): Unit =
+    def imprimirMatriz1(matriz: List[List[Int]],cont:Int): Unit =
       if (matriz.nonEmpty) {
         imprimirFila(leerFila(0, matriz))
-        printf("║  %d", 9 - matriz.length % 10)
+        printf("║  %d", 9 - cont % 10)
         print("\n")
-        imprimirMatriz1(matriz.tail)
+        imprimirMatriz1(matriz.tail,cont-1)
       }
 
     def imprimirMatriz(matriz: List[List[Int]]): Unit = {
-      imprimirMatriz1(matriz)
+      imprimirMatriz1(matriz,9)
       print("═ ═ ═ ═ ═ ═ ═ ═ ╝\n0 1 2 3 4 5 6 7 \n")
     }
 
@@ -98,7 +98,7 @@ intercambiarEnFila(3,leerFila(1,matriz))
 intercambiarEnFila(4,leerFila(1,matriz))
 intercambiarEnFila(5,leerFila(1,matriz))
 intercambiarEnFila(6,leerFila(1,matriz))
- */
+*/
 
 
 //Y es la fila, x es la columna
@@ -143,16 +143,16 @@ def iguales(x: Int,y: Int,z:Int):Boolean ={
 }
 
 @tailrec
-def comprobarIgualesFila(fila:List[Int], columna:Int): Int={
-  if (fila.length<3) -1
+def comprobarIgualesFila(fila:List[Int], columna:Int,cont:Int): Int={
+  if (cont<3) -1
   else if (iguales(fila.head, fila(1), fila(2))) columna
-  else comprobarIgualesFila(fila.tail,columna+1)
+  else comprobarIgualesFila(fila.tail,columna+1,cont-1)
 }
 
 @tailrec
 def comprobarIgualesTablero(matriz:List[List[Int]], fila:Int):List[Int]={
   if (matriz.isEmpty) Nil
-  else if (comprobarIgualesFila(matriz.head,0)>=0) List(fila,comprobarIgualesFila(matriz.head,0))
+  else if (comprobarIgualesFila(matriz.head,0,8)>=0) List(fila,comprobarIgualesFila(matriz.head,0,8))
   else comprobarIgualesTablero(matriz.tail,fila+1)
 }
 
@@ -218,5 +218,4 @@ def moverFicha (matriz:List[List[Int]]):List[List[Int]] ={
     List(3, 8, 5, 0, 3, 0, 3, 3))
 
 jugar(matriz)
-
 }}
