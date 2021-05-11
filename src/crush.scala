@@ -8,6 +8,16 @@ object crush {
 
     val r: Random.type = scala.util.Random
 
+    var matriz: List[List[Int]] = List(
+      List(4, 6, 6, 5, 0, 0, 3, 6),
+      List(1, 0, 8, 2, 2, 4, 1, 0),
+      List(0, 1, 6, 0, 8, 2, 3, 3),
+      List(8, 6, 2, 0, 1, 1, 0, 1),
+      List(5, 4, 7, 8, 3, 8, 1, 4),
+      List(1, 5, 7, 0, 8, 4, 6, 6),
+      List(7, 7, 8, 8, 7, 7, 7, 1),
+      List(4, 6, 0, 3, 4, 6, 1, 0),
+      List(3, 8, 5, 0, 3, 0, 3, 3))
 
     @tailrec
     def crearLista(lista: List[Int], longitud: Int): List[Int] =
@@ -81,34 +91,51 @@ object crush {
     }
 
 
-//No se debe meter el borde derecho
-def intercambiarEnFila(izquierdo:Int, lista:List[Int]):List[Int] =
-  if(izquierdo == 0) {
-    lista.tail.head :: lista.head :: lista.tail.tail
-  }
-  else{
-    lista.head :: intercambiarEnFila(izquierdo - 1, lista.tail)
-  }
-
-/*
-intercambiarEnFila(0,leerFila(1,matriz))
-intercambiarEnFila(1,leerFila(1,matriz))
-intercambiarEnFila(2,leerFila(1,matriz))
-intercambiarEnFila(3,leerFila(1,matriz))
-intercambiarEnFila(4,leerFila(1,matriz))
-intercambiarEnFila(5,leerFila(1,matriz))
-intercambiarEnFila(6,leerFila(1,matriz))
-*/
 
 
-//Y es la fila, x es la columna
-def intercambiar(xizq:Int, yizq:Int, matriz:List[List[Int]]):List[List[Int]] =
-  if(yizq==0){
-    intercambiarEnFila(xizq,matriz.head)::matriz.tail
-  }
-  else{
-    matriz.head :: intercambiar(xizq, yizq - 1, matriz.tail)
-  }
+    def extraerLista(lista:List[Int], ancho:Int):List[Int] =
+      if (lista.isEmpty || ancho==0)
+        List[Int]()
+      else
+        lista.head :: extraerLista(lista.tail, ancho - 1)
+
+    def cogerResto(lista:List[Int], ancho:Int):List[Int] =
+      if (lista.isEmpty || ancho==0)
+        lista
+      else
+        cogerResto(lista.tail, ancho - 1)
+
+
+    def convertirEnListaDeLista(lista:List[Int], ancho:Int):List[List[Int]]=
+      if (lista.isEmpty)
+        List[List[Int]]()
+      else
+        extraerLista(lista,ancho)::convertirEnListaDeLista(cogerResto(lista, ancho), ancho)
+
+    def poner(valor:Int, posicion:Int, lista: List[Int]):List[Int] =
+      if (posicion == 0)
+        valor :: lista.tail
+      else
+        lista.head :: poner(valor, posicion - 1, lista.tail)
+
+
+    def intercambiar(xor:Int, yor:Int,xdes:Int, ydes:Int, matriz:List[List[Int]]):List[List[Int]] = {
+      if(   (((xor-xdes).abs)<=1) && (((yor-ydes).abs)<=1))  {
+        val matrizFlatten = matriz.flatten
+        val posOr = xor * 8 + yor
+        val posDes = xdes * 8 + ydes
+        val valorOr = leerElemento(xor,yor,matriz)
+        println(valorOr)
+        val valorDes = leerElemento(xdes,ydes,matriz)
+        println(valorDes)
+        convertirEnListaDeLista(poner(valorOr,posDes,poner(valorDes,posOr,matrizFlatten)),8)
+      }
+      else {
+        print("Movimiento ilegal")
+        matriz
+      }
+
+    }
 
 
 
@@ -129,7 +156,7 @@ def recalcularTableroAux(x:Int, y:Int, indice:Int, matriz:List[List[Int]], matri
 }
 
 def recalcularTablero(x:Int, y:Int, matriz:List[List[Int]]) = {
-  var matriz2 = insertarEnFila(x+2, r.nextInt(9), insertarEnFila(x+1,r.nextInt(9),insertarEnFila(x,r.nextInt(9),matriz.head))) :: matriz.tail
+  val matriz2 = insertarEnFila(x+2, r.nextInt(9), insertarEnFila(x+1,r.nextInt(9),insertarEnFila(x,r.nextInt(9),matriz.head))) :: matriz.tail
   if (y != 0){
     matriz2.head :: recalcularTableroAux(x, y, 1, matriz, matriz2.tail)
   }
@@ -200,22 +227,17 @@ def quiereMoverFicha(matriz:List[List[Int]]):List[List[Int]]={
   }else matriz
 }
 def moverFicha (matriz:List[List[Int]]):List[List[Int]] ={
-  printf("Introduce la posicion para mover ficha:\n FILA:")
-  val fila = readLine()
-  printf("\n Columna:")
-  val columna = readLine()
-  actualizarTablero(intercambiar(columna.toInt, fila.toInt, matriz))
+  printf("Introduce la posicion para mover ficha:\n Fila Origen:")
+  val filaOr = readLine()
+  printf("\n Columna Origen:")
+  val columnaOr = readLine()
+  printf("\n Fila Destino:")
+  val filaDes = readLine()
+  printf("\n Columna Destino:")
+  val columnaDes = readLine()
+  actualizarTablero(intercambiar(filaOr.toInt,columnaOr.toInt,filaDes.toInt,columnaDes.toInt,matriz))
 }
-  var matriz: List[List[Int]] = List(
-    List(4, 6, 6, 5, 0, 0, 3, 6),
-    List(1, 0, 8, 2, 2, 4, 1, 0),
-    List(0, 1, 6, 0, 8, 2, 3, 3),
-    List(8, 6, 2, 0, 1, 1, 0, 1),
-    List(5, 4, 7, 8, 3, 8, 1, 4),
-    List(1, 5, 7, 0, 8, 4, 6, 6),
-    List(7, 7, 8, 8, 7, 7, 7, 1),
-    List(4, 6, 0, 3, 4, 6, 1, 0),
-    List(3, 8, 5, 0, 3, 0, 3, 3))
+
 
 jugar(matriz)
 }}
