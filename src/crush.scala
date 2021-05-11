@@ -25,7 +25,7 @@ object crush {
       if (longitud == 0)
         lista
       else
-        crearLista(r.nextInt(9) :: lista, longitud - 1)
+        crearLista( (1+ r.nextInt(6)) :: lista, longitud - 1)
 
 
     @tailrec
@@ -116,7 +116,7 @@ object crush {
         val matrizFlatten = matriz.flatten
         val valorOr = leerElemento(xor, yor, matriz)
         val valorDes = leerElemento(xdes, ydes, matriz)
-        printf("Se cambia el valor %d por el valor %d", valorOr, valorDes)
+        printf("Se cambia el valor %d por el valor %d \n", valorOr, valorDes)
         convertirEnListaDeLista(poner(valorOr, posDes, poner(valorDes, posOr, matrizFlatten)), 7)
       }
       else {
@@ -140,7 +140,7 @@ object crush {
     }
 
     def recalcularTablero(x: Int, y: Int, matriz: List[List[Int]]) = {
-      val matriz2 = insertarEnFila(x + 2, r.nextInt(9), insertarEnFila(x + 1, r.nextInt(9), insertarEnFila(x, r.nextInt(9), matriz.head))) :: matriz.tail
+      val matriz2 = insertarEnFila(x + 2, (1+ r.nextInt(6)), insertarEnFila(x + 1, (1+ r.nextInt(6)), insertarEnFila(x, (1+ r.nextInt(6)), matriz.head))) :: matriz.tail
       if (y != 0) {
         matriz2.head :: recalcularTableroAux(x, y, 1, matriz, matriz2.tail)
       }
