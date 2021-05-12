@@ -3,7 +3,7 @@ import scala.io.StdIn.readLine
 import scala.util.Random
 
 
-object crush2a {
+object crush2X {
 
 
   def main(args: Array[String]): Unit = {
@@ -22,23 +22,13 @@ object crush2a {
       List(1, 6, 2, 6, 1, 3, 3),
       List(5, 5, 5, 1, 4, 4, 4))
 
+    def crearLista(longitud:Int):List[Int] =
+      List.fill(longitud)(r.nextInt(6))
 
-    @tailrec
-    def crearLista(lista: List[Int], longitud: Int): List[Int] =
-      if (longitud == 0)
-        lista
-      else
-        crearLista((1 + r.nextInt(6)) :: lista, longitud - 1)
+    def crearTablero(filas: Int, columnas:Int):List[List[Int]] =
+      List.fill(filas)(crearLista(columnas))
 
-
-    @tailrec
-    def crearTablero(lista: List[List[Int]], filas: Int): List[List[Int]] =
-      if (filas == 0)
-        lista
-      else
-        crearTablero(crearLista(List[Int](), 7) :: lista, filas - 1)
-
-    val matriz = crearTablero(List[List[Int]](), 9)
+    var matriz = crearTablero(7,9)
 
 
     @tailrec
@@ -48,18 +38,11 @@ object crush2a {
       else
         leerFila(fila - 1, lista.tail)
 
-
-    @tailrec
-    def leerElementoDeFila(elemento: Int, lista: List[Int]): Int =
-      if (elemento == 0)
-        lista.head
-      else
-        leerElementoDeFila(elemento - 1, lista.tail)
-
-
+    //FILA COLUMNA
     def leerElemento(y: Int, x: Int, matriz: List[List[Int]]): Int =
-      leerElementoDeFila(x, leerFila(y, matriz))
+      matriz(y)(x)
 
+    println(leerElemento(1,6,matriz1))
     @tailrec
     def imprimirFila(fila: List[Int]): Unit = {
       if (fila.nonEmpty) {
@@ -113,27 +96,32 @@ object crush2a {
 
     }
 
-    def insertarEnFila(posicion: Int, numero: Int, lista: List[Int]): List[Int] =
-      if (posicion == 0)
-        numero :: lista.tail
-      else
-        lista.head :: insertarEnFila(posicion - 1, numero, lista.tail)
+    /*
+        def insertarEnFila(posicion: Int, numero: Int, lista: List[Int]): List[Int] =
+          if (posicion == 0)
+            numero :: lista.tail
+          else
+            lista.head :: insertarEnFila(posicion - 1, numero, lista.tail)
 
-    def recalcularTableroAux(x: Int, y: Int, indice: Int, matriz: List[List[Int]], matrizActual: List[List[Int]]): List[List[Int]] = {
-      if (y == indice)
-        insertarEnFila(x + 2, leerElemento(y - 1, x + 2, matriz), insertarEnFila(x + 1, leerElemento(y - 1, x + 1, matriz), insertarEnFila(x, leerElemento(y - 1, x, matriz), matrizActual.head))) :: matrizActual.tail
-      else
-        insertarEnFila(x + 2, leerElemento(indice - 1, x + 2, matriz), insertarEnFila(x + 1, leerElemento(indice - 1, x + 1, matriz), insertarEnFila(x, leerElemento(indice - 1, x, matriz), matrizActual.head))) :: recalcularTableroAux(x, y, indice + 1, matriz, matrizActual.tail)
-    }
+        def recalcularTableroAux(x: Int, y: Int, indice: Int, matriz: List[List[Int]], matrizActual: List[List[Int]]): List[List[Int]] = {
+          if (y == indice)
+            insertarEnFila(x + 2, leerElemento(y - 1, x + 2, matriz), insertarEnFila(x + 1, leerElemento(y - 1, x + 1, matriz), insertarEnFila(x, leerElemento(y - 1, x, matriz), matrizActual.head))) :: matrizActual.tail
+          else
+            insertarEnFila(x + 2, leerElemento(indice - 1, x + 2, matriz), insertarEnFila(x + 1, leerElemento(indice - 1, x + 1, matriz), insertarEnFila(x, leerElemento(indice - 1, x, matriz), matrizActual.head))) :: recalcularTableroAux(x, y, indice + 1, matriz, matrizActual.tail)
+        }
 
-    def recalcularTablero(x: Int, y: Int, matriz: List[List[Int]]) = {
-      val matriz2 = insertarEnFila(x + 2, (1 + r.nextInt(6)), insertarEnFila(x + 1, (1 + r.nextInt(6)), insertarEnFila(x, (1 + r.nextInt(6)), matriz.head))) :: matriz.tail
-      if (y != 0) {
-        matriz2.head :: recalcularTableroAux(x, y, 1, matriz, matriz2.tail)
-      }
-      else {
-        matriz2
-      }
+        def recalcularTablero(x: Int, y: Int, matriz: List[List[Int]]) = {
+          val matriz2 = insertarEnFila(x + 2, (1 + r.nextInt(6)), insertarEnFila(x + 1, (1 + r.nextInt(6)), insertarEnFila(x, (1 + r.nextInt(6)), matriz.head))) :: matriz.tail
+          if (y != 0) {
+            matriz2.head :: recalcularTableroAux(x, y, 1, matriz, matriz2.tail)
+          }
+          else {
+            matriz2
+          }
+        }
+    */
+    def recalcularTablero(fila: List[Int]) = {
+      fila.map{x => if(x==0) (1+r.nextInt(6)) else x}
     }
 
     def iguales(x: Int, y: Int, z: Int): Boolean = {
@@ -163,12 +151,16 @@ object crush2a {
         val coords = comprobarIgualesTablero(matriz, 9)
         val x = coords.head
         val y = coords(1)
+        val posGlobal = x * 7 + y * 9
         printf("Eliminando repeticion en  %d %d\n", x, y)
         imprimirMatriz(matriz)
-        val matrizAct = recalcularTablero(y, x, matriz)
+        // Se pone un 0 donde hay una repetición de 3
+        val matrizAct = poner(0,posGlobal,(poner(0,posGlobal+1,poner(0, posGlobal+2, matriz.flatten))))
+        imprimirMatriz(convertirEnListaDeLista(matrizAct,7))
+        val matrizAct1 = recalcularTablero(matrizAct)
         println("Actualizado")
-        imprimirMatriz(matrizAct)
-        actualizarTablero(matrizAct)
+        imprimirMatriz(convertirEnListaDeLista(matrizAct1,7))
+        actualizarTablero(convertirEnListaDeLista(matrizAct1,7))
       }
       else {
         println()
@@ -177,27 +169,26 @@ object crush2a {
       }
     }
 
-
     def jugar(matriz: List[List[Int]]): Unit = {
       imprimirMatriz(matriz)
       print("¿Quieres jugar?             Si/No\n->")
       val respuesta = readLine()
-      respuesta match {
-        case "Si" | "si" =>
-          val matrizAct = actualizarTablero(matriz)
-          quiereMoverFicha(matrizAct)
-        case _ => print("Gracias por jugar, adiós")
+
+      if (respuesta == "Si" || respuesta == "si") {
+        val matrizAct = actualizarTablero(matriz)
+        quiereMoverFicha(matrizAct)
       }
+      printf("Gracias por jugar, adiós")
+
     }
 
-    @tailrec //Usando match case
+    @tailrec
     def quiereMoverFicha(matriz: List[List[Int]]): List[List[Int]] = {
       printf("¿Quieres mover ficha?           Si/No\n->")
-      val respuesta = readLine()
-      respuesta match {
-        case "Si" | "si" => quiereMoverFicha(moverFicha(matriz))
-        case _ => matriz
-      }
+      val respuesta1 = readLine()
+      if (respuesta1 == "Si" || respuesta1 == "si") {
+        quiereMoverFicha(moverFicha(matriz))
+      } else matriz
     }
 
     def moverFicha(matriz: List[List[Int]]): List[List[Int]] = {
@@ -212,7 +203,9 @@ object crush2a {
       actualizarTablero(intercambiar(filaOr.toInt, columnaOr.toInt, filaDes.toInt, columnaDes.toInt, matriz))
     }
 
-    jugar(matriz)
+    //jugar(matriz)
+
+
   }
 
 
