@@ -7,25 +7,26 @@ object crush {
   def main(args: Array[String]): Unit = {
 
     val r: Random.type = scala.util.Random
-/*
-        var matriz: List[List[Int]] = List(
-          List(2,0, 4,8, 7, 6, 8),
-          List(3 ,5, 6 ,8, 6 ,3 ,1),
-          List(1 ,4 ,8, 6, 3, 0 ,4),
-          List(2 ,8, 0 ,7 ,8 ,8, 0),
-          List(3 ,3, 2, 1, 7, 3, 6 ),
-          List(0 ,6 ,2 ,4 ,5, 7 ,4 ),
-          List(5 ,2, 0, 6, 8, 7, 2 ),
-          List(6 ,3 ,0 ,2 ,2 ,2 ,0 ),
-          List(5 ,0 ,2, 0, 3, 0, 5))
 
-*/
+
+            var matriz: List[List[Int]] = List(
+              List(2,0, 4,8, 7, 6, 8),
+              List(3 ,5, 6 ,8, 6 ,3 ,1),
+              List(1 ,4 ,8, 6, 3, 0 ,4),
+              List(2 ,8, 0 ,7 ,8 ,8, 0),
+              List(3 ,3, 2, 1, 7, 3, 6 ),
+              List(0 ,6 ,2 ,4 ,5, 7 ,4 ),
+              List(5 ,2, 0, 6, 8, 7, 2 ),
+              List(1 ,6 ,1 ,6 ,3, 3 ,5  ),
+              List(2, 5 ,3 ,1 ,4 ,4, 3 ))
+
+
     @tailrec
     def crearLista(lista: List[Int], longitud: Int): List[Int] =
       if (longitud == 0)
         lista
       else
-        crearLista( (1+ r.nextInt(6)) :: lista, longitud - 1)
+        crearLista((1 + r.nextInt(6)) :: lista, longitud - 1)
 
 
     @tailrec
@@ -35,7 +36,7 @@ object crush {
       else
         crearTablero(crearLista(List[Int](), 7) :: lista, filas - 1)
 
-    var matriz = crearTablero(List[List[Int]](), 9)
+    //var matriz = crearTablero(List[List[Int]](), 9)
 
 
     @tailrec
@@ -140,7 +141,7 @@ object crush {
     }
 
     def recalcularTablero(x: Int, y: Int, matriz: List[List[Int]]) = {
-      val matriz2 = insertarEnFila(x + 2, (1+ r.nextInt(6)), insertarEnFila(x + 1, (1+ r.nextInt(6)), insertarEnFila(x, (1+ r.nextInt(6)), matriz.head))) :: matriz.tail
+      val matriz2 = insertarEnFila(x + 2, (1 + r.nextInt(6)), insertarEnFila(x + 1, (1 + r.nextInt(6)), insertarEnFila(x, (1 + r.nextInt(6)), matriz.head))) :: matriz.tail
       if (y != 0) {
         matriz2.head :: recalcularTableroAux(x, y, 1, matriz, matriz2.tail)
       }
@@ -156,10 +157,11 @@ object crush {
 
     @tailrec
     def comprobarIgualesFila(fila: List[Int], columna: Int): Int = {
-      if (columna > 3) -1
+      if (columna > 4) -1
       else if (iguales(fila.head, fila(1), fila(2))) columna
       else comprobarIgualesFila(fila.tail, columna + 1)
     }
+
 
     @tailrec
     def comprobarIgualesTablero(matriz: List[List[Int]], fila: Int): List[Int] = {
@@ -174,15 +176,17 @@ object crush {
         val coords = comprobarIgualesTablero(matriz, 0)
         val x = coords.head
         val y = coords(1)
-        val matrizAct = recalcularTablero(y, x, matriz)
         printf("Eliminando repeticion en  %d %d\n", x, y)
+        imprimirMatriz(matriz)
+        val matrizAct = recalcularTablero(y, x, matriz)
+        println("Actualizado")
         imprimirMatriz(matrizAct)
         actualizarTablero(matrizAct)
 
       }
       else {
         println()
-        imprimirMatriz(matriz)
+        //imprimirMatriz(matriz)
         print("Tablero sin repeticiones  \n")
         matriz
       }
@@ -193,7 +197,7 @@ object crush {
       print("¿Quieres jugar?             Si/No\n->")
       val respuesta = readLine()
 
-      if (respuesta == "Si" || respuesta == "si" ) {
+      if (respuesta == "Si" || respuesta == "si") {
         val matrizAct = actualizarTablero(matriz)
         quiereMoverFicha(matrizAct)
       }
