@@ -75,8 +75,7 @@ object crush {
     def imprimirMatriz1(matriz: List[List[Int]], cont: Int): Unit =
       if (matriz.nonEmpty) {
         imprimirFila(leerFila(0, matriz))
-        printf("║  %d", 9 - cont % 10)
-        print("\n")
+        printf("║  %d\n", 9 - cont % 10)
         imprimirMatriz1(matriz.tail, cont - 1)
       }
 

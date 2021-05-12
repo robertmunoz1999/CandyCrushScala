@@ -75,8 +75,7 @@ object crush2a {
     def imprimirMatriz1(matriz: List[List[Int]], cont: Int): Unit =
       if (matriz.nonEmpty) {
         imprimirFila(leerFila(0, matriz))
-        printf("║  %d", 9 - cont % 10)
-        print("\n")
+        printf("║  %d\n", 9 - matriz.length)
         imprimirMatriz1(matriz.tail, cont - 1)
       }
 
@@ -138,8 +137,7 @@ object crush2a {
     }
 
     def iguales(x: Int, y: Int, z: Int): Boolean = {
-      if ((x == y) && (x == z)) true
-      else false
+      if ((x == y) && (x == z)) true; else false
     }
 
     @tailrec //Actualizado con .length
@@ -149,7 +147,7 @@ object crush2a {
       else comprobarIgualesFila(fila.tail, tam)
     }
 
-    @tailrec
+    @tailrec //Actualizado con .length
     def comprobarIgualesTablero(matriz: List[List[Int]], tam: Int): List[Int] = {
       if (matriz.isEmpty) Nil //9 - x
       else {
@@ -171,7 +169,6 @@ object crush2a {
         println("Actualizado")
         imprimirMatriz(matrizAct)
         actualizarTablero(matrizAct)
-
       }
       else {
         println()
