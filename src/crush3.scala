@@ -10,15 +10,15 @@ object crush3 {
 
 
     var matriz1: List[List[Int]] = List(
-      List(2, 0, 0, 8, 7, 6, 8),
-      List(0, 5, 6, 8, 6, 3, 1),
-      List(1, 4, 8, 3, 3, 0, 3),
-      List(2, 8, 8, 7, 8, 8, 0),
+      List(2, 3, 2, 1, 2, 6, 1),
+      List(0, 5, 6, 3, 6, 3, 1),
+      List(1, 4, 3, 3, 2, 3, 3),
+      List(2, 1, 4, 6, 6, 5, 2),
       List(3, 2, 2, 1, 2, 3, 6),
-      List(0, 6, 2, 4, 5, 7, 4),
-      List(5, 2, 0, 6, 8, 7, 2),
+      List(3, 6, 2, 4, 5, 3, 4),
+      List(5, 2, 5, 6, 6, 3, 2),
       List(1, 6, 1, 6, 3, 3, 5),
-      List(2, 5, 3, 1, 4, 4, 3))
+      List(2, 5, 3, 4, 4, 4, 3))
 
 
     @tailrec
@@ -112,7 +112,8 @@ object crush3 {
     def intercambiar(xor: Int, yor: Int, xdes: Int, ydes: Int, matriz: List[List[Int]]): List[List[Int]] = {
       val posOr = xor * 7 + yor
       val posDes = xdes * 7 + ydes
-      if ((((xor - xdes).abs) <= 1) && (((yor - ydes).abs) <= 1) && !((((xor - xdes).abs) == 1) && (((yor - ydes).abs) == 1)) && (posOr < 63) && (posDes < 63)) {
+      if ((((xor - xdes).abs) <= 1) && (((yor - ydes).abs) <= 1) && !((((xor - xdes).abs) == 1) && (((yor - ydes).abs) == 1)) &&
+        (posOr < 63) && (posDes < 63) && (posOr >= 0) && (posDes >= 0)) {
         val matrizFlatten = matriz.flatten
         val valorOr = leerElemento(xor, yor, matriz)
         val valorDes = leerElemento(xdes, ydes, matriz)
@@ -149,6 +150,16 @@ object crush3 {
       }
     }
 
+    def recalcularTableroCeros(x: Int, y: Int, matriz: List[List[Int]]) = {
+      val matriz2 = insertarEnFila(x + 2, 0, insertarEnFila(x + 1, 0, insertarEnFila(x, 0, matriz.head))) :: matriz.tail
+      if (y != 0) {
+        matriz2.head :: recalcularTableroAux(x, y, 1, matriz, matriz2.tail)
+      }
+      else {
+        matriz2
+      }
+    }
+
     def iguales(x: Int, y: Int, z: Int): Boolean = {
       if ((x == y) && (x == z)) true
       else false
@@ -169,6 +180,19 @@ object crush3 {
         val y = comprobarIgualesFila(matriz.head, 0)
         if (y >= 0) List(fila, y)
         else comprobarIgualesTablero(matriz.tail, fila + 1)
+      }
+    }
+
+    def contarIgualesFila(fila: List[Int], cont: Int): Int = {
+      if (cont > 2 || fila.length < 3) 0
+      else if (fila.head != 0 && iguales(fila.head, fila(1), fila(2))) 1 + contarIgualesFila(fila.tail, cont)
+      else contarIgualesFila(fila.tail, cont)
+    }
+
+    def contarIgualesTablero(matriz: List[List[Int]], fila: Int): Int = {
+      if (matriz.isEmpty) 0
+      else {
+        contarIgualesFila(matriz.head, 0) + contarIgualesTablero(matriz.tail, fila + 1)
       }
     }
 
@@ -227,8 +251,97 @@ object crush3 {
       actualizarTablero(intercambiar(filaOr.toInt, columnaOr.toInt, filaDes.toInt, columnaDes.toInt, matriz))
     }
 
+
     //origen-fin
-    def calcularPosicionIdoneaFila(lista: List[Int]): List[Int] = {
+    def calcularPosicionIdoneaFila(lista: List[Int], pos: Int, fila: Int): List[List[Int]] = {
+      if (lista.isEmpty || lista.length < 4)
+        Nil
+      else {
+        if (lista.head != 0 && lista.head == lista.tail.tail.head && lista.head == lista.tail.tail.tail.head) { //3033
+          List[Int](fila, pos + 1, pos, pos + 1) :: calcularPosicionIdoneaFila(lista.tail, pos + 1, fila)
+        } else if (lista.head != 0 && lista.head == lista.tail.head && lista.head == lista.tail.tail.tail.head) { //3303
+          List[Int](fila, pos + 2, pos + 3, pos) :: calcularPosicionIdoneaFila(lista.tail, pos + 1, fila)
+        }
+        else {
+          val calculo = calcularPosicionIdoneaFila(lista.tail, pos + 1, fila)
+          if (calculo == Nil)
+            Nil
+          else
+            calculo
+        }
+      }
+    }
+
+    def calcularPosicionIdonea(matriz: List[List[Int]], fila: Int): List[List[Int]] = {
+      if (matriz.isEmpty)
+        Nil
+      else {
+        val calculo = calcularPosicionIdoneaFila(matriz.head, 0, fila)
+        if (calculo.isEmpty)
+          calcularPosicionIdonea(matriz.tail, fila + 1)
+        else
+          calculo ::: calcularPosicionIdonea(matriz.tail, fila + 1)
+      }
+    }
+
+    def max(xs: List[Int]): Option[Int] = xs match {
+      case Nil => None
+      case List(x: Int) => Some(x)
+      case x :: y :: rest => max((if (x > y) x else y) :: rest)
+    }
+
+
+
+    def mejorMovimiento(matriz: List[Int], listadejugadas: List[List[Int]], mejorJugada: List[Int], maximo: Int): List[Int] = {
+      println(listadejugadas.length)
+      if(listadejugadas == Nil)
+        return mejorJugada
+      val jugadaActual = listadejugadas.head
+      val matrizPostJugada = intercambiar(jugadaActual.tail.head, jugadaActual.head, jugadaActual.tail.tail.head, jugadaActual.head, matriz.grouped(7).toList)
+      val matrizPostJugadaRecalc = recalcularTableroCeros(jugadaActual.tail.tail.tail.head, jugadaActual.head, matrizPostJugada)
+      val idoneas = calcularPosicionIdonea(matrizPostJugadaRecalc, 0).length
+      val iguales = contarIgualesTablero(matrizPostJugadaRecalc, 0)
+      val valordejugada = idoneas + iguales*2 //Probar y cambiar
+      println("para la jugada ",jugadaActual," valr: ",valordejugada)
+      imprimirMatriz(matrizPostJugadaRecalc)
+      if (valordejugada > maximo)
+        mejorMovimiento(matriz, listadejugadas.tail, jugadaActual, valordejugada)
+      else
+        mejorMovimiento(matriz, listadejugadas.tail, mejorJugada, maximo)
+    }
+    jugar(matriz1)
+
+  }
+
+
+}
+
+
+
+/*
+ if (mejorPosI != Nil){val maximoI = maximo + 1}
+        else {
+          val maximoI = maximo
+          if (mejorPosD != Nil) {val maximoD = maximo + 1}
+          else {
+            val maximoD = maximo
+            if (mejorPosAr != Nil){val maximoAr = maximo + 1}
+            else {
+              val maximoAr = maximo
+              if (mejorPosAb != Nil){val maximoAb = maximo + 1}
+              else{val maximoAb = maximo}
+          }}}
+
+        if (igualesI != Nil){val maximoAct = maximo + 10}
+        else {
+          if (igualesD != Nil) {val maximoAct = maximo + 10}
+          else {
+            if (igualesAr != Nil){val maximoAct = maximo + 10}
+            else {
+              if (igualesAb != Nil){val maximoAct = maximo + 10}
+            }}}
+
+ def calcularPosicionIdoneaFila(lista: List[Int]): List[Int] = {
       if (lista.isEmpty || lista.length < 5)
         Nil
       else {
@@ -245,28 +358,4 @@ object crush3 {
         }
       }
     }
-
-    def calcularPosicionIdonea(matriz: List[List[Int]]): List[Int] = {
-      if (matriz.isEmpty)
-        Nil
-      else {
-        val calculo = calcularPosicionIdoneaFila(matriz.head)
-        if (calculo.isEmpty)
-          calcularPosicionIdonea(matriz.tail)
-        else
-          calculo :+ (9 - matriz.length)
-      }
-    }
-    /*
-    def calcularPosicionIdoneaColumna(matriz: List[List[Int]]): List[Int] = {
-      if ((matriz.head.tail.head == matriz.head.tail.tail.head) && (matriz.tail.head.head == matriz.head.tail.head)) // * 1 1 *
-        List[Int](9-matriz.head.length)
-    }
-    //print(calcularPosicionIdoneaColumna(matriz1))
-    //print(calcularPosicionIdonea(matriz1))
-
-     */
-
-    jugar(matriz1)
-  }
-}
+ */
