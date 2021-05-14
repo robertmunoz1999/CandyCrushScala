@@ -10,15 +10,15 @@ object crush3 {
 
 
     var matriz1: List[List[Int]] = List(
-      List(2, 3, 3, 1, 2, 6, 1),
+      List(2, 3, 3, 1, 2, 6, 6),
       List(1, 5, 6, 3, 6, 3, 1),
       List(1, 4, 3, 3, 2, 3, 3),
       List(2, 1, 4, 6, 6, 5, 2),
-      List(3, 2, 6, 1, 2, 3, 6),
-      List(1, 6, 2, 4, 5, 3, 4),
+      List(2, 2, 3, 1, 2, 6, 6),
+      List(1, 6, 2, 4, 4, 3, 4),
       List(5, 2, 5, 6, 6, 3, 2),
       List(1, 6, 1, 6, 2, 3, 3),
-      List(2, 5, 3, 3, 3, 4, 3))
+      List(2, 5, 3, 3, 3, 4, 1))
     val matriz2 = matriz1.flatten
 
     @tailrec
@@ -272,26 +272,6 @@ object crush3 {
       }
     }
 
-
-    def calcularPosicionIdoneaVertical(lista: List[Int], pos: Int): List[List[Int]] = {
-      if (lista.isEmpty || pos>55) {
-        Nil
-      } else {
-        if ((lista(pos + 1) == lista(pos + 2))&& (lista(pos + 1) == lista(pos + 7)) && (pos%7!=1)   ) { //|| (lista(pos+1) == (lista(pos+9)))
-          List[Int](pos%7, pos + 1, pos + 2, pos) :: calcularPosicionIdoneaVertical(lista, pos + 1)
-        }
-        else {
-          val calculo = calcularPosicionIdoneaVertical(lista, pos + 1)
-          if (calculo == Nil)
-            Nil
-          else
-            calculo
-        }
-      }
-    }
-    println(calcularPosicionIdoneaVertical(matriz2,0))
-
-
     def calcularPosicionIdonea(matriz: List[List[Int]], fila: Int): List[List[Int]] = {
       if (matriz.isEmpty)
         Nil
@@ -304,11 +284,30 @@ object crush3 {
       }
     }
 
-    def max(xs: List[Int]): Option[Int] = xs match {
-      case Nil => None
-      case List(x: Int) => Some(x)
-      case x :: y :: rest => max((if (x > y) x else y) :: rest)
+    def calcularPosicionIdoneaVertical(lista: List[Int], pos: Int): List[List[Int]] = {
+      if (lista.isEmpty || pos>55) {
+        Nil
+      } else {                                     //((pos%7)+7 != 12) &&((pos%7)+7 != 13) con este se evita mirar en casillas donde es imposible darse el caso
+        if ((lista(pos + 1) == lista(pos + 2)) && ((pos%7)+7 != 12) &&((pos%7)+7 != 13) && (lista(pos + 1) == lista(pos + 7))  ) { //||
+          List[Int](pos/7, pos, pos + 7, pos) :: calcularPosicionIdoneaVertical(lista, pos + 1)
+        }
+        else if((lista(pos + 1) == lista(pos + 2)) && ((pos%7)+7 != 12) &&((pos%7)+7 != 13) && (lista(pos+1) == (lista(pos+10)))   ) {
+          List[Int](pos/7, pos + 3, pos + 10, pos+1) :: calcularPosicionIdoneaVertical(lista, pos + 1)
+        }
+
+        else {
+          val calculo = calcularPosicionIdoneaVertical(lista, pos + 1)
+          if (calculo == Nil)
+            Nil
+          else
+            calculo
+        }
+      }
     }
+    println(calcularPosicionIdoneaVertical(matriz2,0))
+
+
+
 
 
     def mejorMovimiento(matriz: List[Int], listadejugadas: List[List[Int]], mejorJugada: List[Int], maximo: Int): List[Int] = {
@@ -328,53 +327,19 @@ object crush3 {
       else
         mejorMovimiento(matriz, listadejugadas.tail, mejorJugada, maximo)
     }
+    //println(calcularPosicionIdonea(matriz1,0))
     //jugar(matriz1)
+
+
 
   }
 
 
 }
-
-
-
 /*
- if (mejorPosI != Nil){val maximoI = maximo + 1}
-        else {
-          val maximoI = maximo
-          if (mejorPosD != Nil) {val maximoD = maximo + 1}
-          else {
-            val maximoD = maximo
-            if (mejorPosAr != Nil){val maximoAr = maximo + 1}
-            else {
-              val maximoAr = maximo
-              if (mejorPosAb != Nil){val maximoAb = maximo + 1}
-              else{val maximoAb = maximo}
-          }}}
-
-        if (igualesI != Nil){val maximoAct = maximo + 10}
-        else {
-          if (igualesD != Nil) {val maximoAct = maximo + 10}
-          else {
-            if (igualesAr != Nil){val maximoAct = maximo + 10}
-            else {
-              if (igualesAb != Nil){val maximoAct = maximo + 10}
-            }}}
-
- def calcularPosicionIdoneaFila(lista: List[Int]): List[Int] = {
-      if (lista.isEmpty || lista.length < 5)
-        Nil
-      else {
-        if (lista.head == lista.tail.tail.head && lista.head == lista.tail.tail.tail.head) //3033
-          List[Int](1, 0)
-        else if (lista.head == lista.tail.head && lista.head == lista.tail.tail.tail.head) //3303
-          List[Int](2, 3)
-        else {
-          val calculo = calcularPosicionIdoneaFila(lista.tail)
-          if (calculo == Nil)
-            Nil
-          else
-            List(1 + calculo.head, 1 + calculo.tail.head)
-        }
-      }
+   def max(xs: List[Int]): Option[Int] = xs match {
+      case Nil => None
+      case List(x: Int) => Some(x)
+      case x :: y :: rest => max((if (x > y) x else y) :: rest)
     }
  */

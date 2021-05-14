@@ -6,9 +6,8 @@ import scala.util.Random
 object pruebas {
   def main(args: Array[String]): Unit = {
 
-   var lista = List.range(0,10)
 
-    print(lista)
+    print(20%7+7)
 
 
   }
