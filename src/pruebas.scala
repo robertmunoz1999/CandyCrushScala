@@ -6,8 +6,11 @@ import scala.util.Random
 object pruebas {
   def main(args: Array[String]): Unit = {
 
-    val lista = List(2, 4, 3, 4, 6)
-    println(lista.tail.tail.tail.tail.head)
+
+    print(0%7 )
+    print(7%7 )
+    print(14%7 )
+    print(21%7 )
 
 
 
