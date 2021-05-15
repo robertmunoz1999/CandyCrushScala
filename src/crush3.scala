@@ -70,8 +70,9 @@ object crush3 {
     @tailrec //Método que muestra por pantalla una fila (lista de enteros).
     def imprimirFila(fila: List[Int]): Unit = {
       if (fila.nonEmpty) {
+        print("  ")
         print(fila.head)
-        print(" ")
+        print("  ")
         imprimirFila(fila.tail)
       }
     }
@@ -87,7 +88,8 @@ object crush3 {
     //Método principal para imprimirla matriz. Se basa en imprimirMatrizAux y añadir una guía de columnas.
     def imprimirMatriz(matriz: List[List[Int]]): Unit = {
       imprimirMatrizAux(matriz, 9)
-      print("═ ═ ═ ═ ═ ═ ═ ╝\n0 1 2 3 4 5 6 \n")
+      print(" ═══  ═══  ═══  ═══  ═══  ═══  ═══ ╝\n  0    1    2    3    4    5    6 \n")
+      ""
     }
 
     //Método para poner un Valor pasado, en una posición pasada, en una lista pasada.
@@ -340,11 +342,13 @@ object crush3 {
     //Primero método para el desarrollo del juego. Una vez comenzado actualiza la matriz y nos muestra las opciones.
     def jugar(matriz: List[List[Int]]): Unit = {
       if (matriz != Nil) {
-        imprimirMatriz(matriz)
+
         print("¿Empezar nueva partida?             Si/No\n->")
         val respuesta = readLine()
 
         if (respuesta == "Si" || respuesta == "si" || respuesta == "SI") {
+          println("--------Tablero inicial--------\n")
+          imprimirMatriz(matriz)
           val matrizAct = actualizarTablero(matriz)
           opciones(matrizAct)
         }
@@ -400,8 +404,7 @@ object crush3 {
     }
 
     var matriz = crearTablero(List[List[Int]](), 9)
-    jugar(matriz4)
-    //println(calcularPosicionIdoneaVertical(matriz4.flatten,0))
+    jugar(matriz)
   }
 }
 
