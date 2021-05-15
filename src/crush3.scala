@@ -9,17 +9,20 @@ object crush3 {
     val r: Random.type = scala.util.Random
 
 
-    var matriz1: List[List[Int]] = List(
-      List(2, 1, 3, 1, 2, 6, 6),
-      List(1, 2, 2, 3, 6, 3, 1),
-      List(1, 4, 3, 3, 2, 3, 3),
-      List(2, 1, 4, 6, 6, 5, 2),
-      List(2, 2, 3, 1, 2, 6, 6),
-      List(1, 6, 1, 4, 4, 3, 4),
-      List(5, 2, 5, 6, 4, 4, 2),
-      List(1, 6, 1, 6, 2, 3, 3),
-      List(2, 5, 3, 3, 3, 4, 1))
-    val matriz2 = matriz1.flatten
+    val matriz1: List[List[Int]] = List(
+      List(2, 1, 2, 2, 6, 2, 6),
+      List(1, 2, 3, 5, 1, 3, 1),
+      List(1, 4, 2, 6, 1, 6, 3),
+      List(2, 1, 3, 1, 2, 3, 2),
+      List(2, 2, 4, 3, 6, 3, 6),
+      List(1, 6, 3, 3, 2, 5, 4),
+      List(5, 2, 1, 1, 2, 3, 2),
+      List(1, 6, 5, 6, 4, 3, 3),
+      List(2, 5, 1, 6, 2, 4, 1))
+
+
+
+
 
     @tailrec
     def crearLista(lista: List[Int], longitud: Int): List[Int] =
@@ -208,46 +211,11 @@ object crush3 {
       }
       else {
         println()
-        //imprimirMatriz(matriz)
+        imprimirMatriz(matriz)
         print("Tablero sin repeticiones  \n")
         matriz
       }
     }
-
-    def jugar(matriz: List[List[Int]]) = {
-      imprimirMatriz(matriz)
-      print("¿Quieres jugar?             Si/No\n->")
-      val respuesta = readLine()
-
-      if (respuesta == "Si" || respuesta == "si") {
-        val matrizAct = actualizarTablero(matriz)
-        quiereMoverFicha(matrizAct)
-      }
-      printf("Gracias por jugar, adiós")
-
-    }
-
-    @tailrec
-    def quiereMoverFicha(matriz: List[List[Int]]): List[List[Int]] = {
-      printf("¿Quieres mover ficha?           Si/No\n->")
-      val respuesta1 = readLine()
-      if (respuesta1 == "Si" || respuesta1 == "si") {
-        quiereMoverFicha(moverFicha(matriz))
-      } else matriz
-    }
-
-    def moverFicha(matriz: List[List[Int]]): List[List[Int]] = {
-      printf("Introduce la posicion para mover ficha:\n Fila Origen:")
-      val filaOr = readLine()
-      printf("\n Columna Origen:")
-      val columnaOr = readLine()
-      printf("\n Fila Destino:")
-      val filaDes = readLine()
-      printf("\n Columna Destino:")
-      val columnaDes = readLine()
-      actualizarTablero(intercambiar(filaOr.toInt, columnaOr.toInt, filaDes.toInt, columnaDes.toInt, matriz))
-    }
-
 
     //origen-fin
     def calcularPosicionIdoneaFila(lista: List[Int], pos: Int, fila: Int): List[List[Int]] = {
@@ -282,37 +250,33 @@ object crush3 {
     }
 
     def calcularPosicionIdoneaVertical(lista: List[Int], pos: Int): List[List[Int]] = {
-      if (lista.isEmpty || (pos > 53)) {
+      if (pos > 53) {
         Nil
-      } else { //((pos%7)+7 != 12) &&((pos%7)+7 != 13) con este se evita mirar en casillas donde es imposible darse el caso
-        if ((lista(pos + 1) == lista(pos + 2)) && (lista(pos + 1) == lista(pos + 7)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) {              //X00
+      } else {
+        if ((lista(pos + 1) == lista(pos + 2)) && (lista(pos + 1) == lista(pos + 7)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) { //X00
           List[Int](pos / 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos / 7) :: calcularPosicionIdoneaVertical(lista, pos + 1) //0XX
         } // FILA , POS EN FILA, POS EN FILA+1,POS TRÍO,FILA TRÍO
-        else if ((lista(pos) == lista(pos + 1)) && (lista(pos) == lista(pos + 9)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) {                             //00X
+        else if ((lista(pos) == lista(pos + 1)) && (lista(pos) == lista(pos + 9)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) { //00X
           List[Int](pos / 7, (pos + 2) - (pos / 7) * 7, (pos + 2) - (pos / 7) * 7, pos - (pos / 7) * 7, pos / 7) :: calcularPosicionIdoneaVertical(lista, pos + 1) //XX0
         }
-        else if ((lista(pos + 8) == lista(pos + 9)) && (lista(pos + 8) == lista(pos)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) {                 //0XX
+        else if ((lista(pos + 8) == lista(pos + 9)) && (lista(pos + 8) == lista(pos)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) { //0XX
           List[Int](pos / 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos / 7 + 1) :: calcularPosicionIdoneaVertical(lista, pos + 1) //X00
         }
-        else if ((lista(pos + 5) == lista(pos + 6)) && (lista(pos + 5) == lista(pos)) && ((pos % 7) != 0) && ((pos % 7) + 7 != 1)) {                             //XX0
+        else if ((lista(pos + 5) == lista(pos + 6)) && (lista(pos + 5) == lista(pos)) && ((pos % 7) != 0) && ((pos % 7) + 7 != 1)) { //XX0
           List[Int](pos / 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, (pos - 2) - (pos / 7) * 7, pos / 7 + 1) :: calcularPosicionIdoneaVertical(lista, pos + 1) //00X
         }
-
         else {
-          val calculo = calcularPosicionIdoneaVertical(lista, pos + 1)
-          if (calculo == Nil)
-            Nil
-          else
-            calculo
+          calcularPosicionIdoneaVertical(lista, pos + 1)
+
         }
       }
     }
 
 
     @tailrec
-    def mejorMovimientoHorizontal(matriz: List[Int], listadejugadas: List[List[Int]], mejorJugada: List[Int], maximo: Int): List[Any] = {
+    def mejorMovimientoHorizontal(matriz: List[Int], listadejugadas: List[List[Int]], mejorJugada: List[Int], maximo: Int): List[Int] = {
       if (listadejugadas == Nil)
-        return List(mejorJugada, maximo)
+        return mejorJugada :+ maximo
       val jugadaActual = listadejugadas.head
       //println(jugadaActual)
       val matrizPostJugada = intercambiar(jugadaActual.head, jugadaActual.tail.head, jugadaActual.head, jugadaActual.tail.tail.head, matriz.grouped(7).toList)
@@ -321,39 +285,95 @@ object crush3 {
       val idoneas = calcularPosicionIdonea(matrizPostJugadaRecalc, 0).length
       val iguales = contarIgualesTablero(matrizPostJugadaRecalc, 0)
       val valordejugada = idoneas + iguales * 2 //Probar y cambiar
-      if (valordejugada > maximo)
+      if (valordejugada >= maximo)
         mejorMovimientoHorizontal(matriz, listadejugadas.tail, jugadaActual, valordejugada)
       else
         mejorMovimientoHorizontal(matriz, listadejugadas.tail, mejorJugada, maximo)
     }
 
     @tailrec
-    def mejorMovimientoVertical(matriz: List[Int], listadejugadas: List[List[Int]], mejorJugada: List[Int], maximo: Int): List[Any] = {
+    def mejorMovimientoVertical(matriz: List[Int], listadejugadas: List[List[Int]], mejorJugada: List[Int], maximo: Int): List[Int] = {
       if (listadejugadas == Nil)
-        return List(mejorJugada, maximo)
+        return mejorJugada :+ maximo
       val jugadaActual = listadejugadas.head
-      //print(jugadaActual)
+      //println(jugadaActual)
       val matrizPostJugada = intercambiar(jugadaActual.head, jugadaActual.tail.head, jugadaActual.head + 1, jugadaActual.tail.tail.head, matriz.grouped(7).toList)
       val matrizPostJugadaRecalc = recalcularTableroCeros(jugadaActual.tail.tail.tail.tail.head, jugadaActual.tail.tail.tail.head, matrizPostJugada)
       val idoneas = calcularPosicionIdonea(matrizPostJugadaRecalc, 0).length
       val iguales = contarIgualesTablero(matrizPostJugadaRecalc, 0)
       val valordejugada = idoneas + iguales * 2 //Probar y cambiar
       //println("->Valor jugada:",valordejugada)
-      if (valordejugada > maximo)
+      if (valordejugada >= maximo)
         mejorMovimientoVertical(matriz, listadejugadas.tail, jugadaActual, valordejugada)
       else
         mejorMovimientoVertical(matriz, listadejugadas.tail, mejorJugada, maximo)
     }
 
-    print(mejorMovimientoVertical(matriz2, calcularPosicionIdoneaVertical(matriz2, 0), List(), 0))
-  }
-
-
-}
-/*
-   def max(xs: List[Int]): Option[Int] = xs match {
-      case Nil => None
-      case List(x: Int) => Some(x)
-      case x :: y :: rest => max((if (x > y) x else y) :: rest)
+    def moverFicha(matriz: List[List[Int]]): List[List[Int]] = {
+      printf("Introduce la posicion para mover ficha:\n Fila Origen:")
+      val filaOr = readLine()
+      printf("\n Columna Origen:")
+      val columnaOr = readLine()
+      printf("\n Fila Destino:")
+      val filaDes = readLine()
+      printf("\n Columna Destino:")
+      val columnaDes = readLine()
+      actualizarTablero(intercambiar(filaOr.toInt, columnaOr.toInt, filaDes.toInt, columnaDes.toInt, matriz))
     }
- */
+
+    def jugar(matriz: List[List[Int]]) = {
+      imprimirMatriz(matriz)
+      print("¿Quieres jugar?             Si/No\n->")
+      val respuesta = readLine()
+
+      if (respuesta == "Si" || respuesta == "si"|| respuesta == "SI" ) {
+        val matrizAct = actualizarTablero(matriz)
+        quiereMoverFicha(matrizAct)
+      }
+      printf("Gracias por jugar, adiós")
+
+    }
+
+
+
+    def quiereMoverFicha(matriz: List[List[Int]]): List[List[Int]] = {
+      printf("*Si quiere mover ficha introduzca ---> M \n*Si quiere una pista introduzca ---> P \n*Si quiere salir introduzca ---> Exit  \n->")
+      val respuesta1 = readLine()
+      if (respuesta1 == "M" || respuesta1 == "m") {
+        quiereMoverFicha(moverFicha(matriz))
+      } else if (respuesta1 == "p" || respuesta1 == "P") {
+        val mejorMovV = mejorMovimientoVertical(matriz.flatten, calcularPosicionIdoneaVertical(matriz.flatten, 0), List(), 0)
+        val mejorMovH = mejorMovimientoHorizontal(matriz.flatten, calcularPosicionIdonea(matriz, 0), List(), 0)
+        println(mejorMovV,mejorMovH)
+        if (mejorMovV == List(0) && mejorMovH == List(0)) {
+          println("No se han encontrado jugadas óptimas.")
+          quiereMoverFicha(matriz)
+        } else if (mejorMovV != List(0) && mejorMovH == List(0)) {
+          println("El mejor movimiento es una captura vertical \n " +
+            "Mueve la ficha de:[" + mejorMovV.head + "," + mejorMovV.tail.head + "] por [" + mejorMovV.head + 1 + "," + mejorMovV.tail.tail.head + "]")
+          quiereMoverFicha(actualizarTablero(intercambiar(mejorMovV.head, mejorMovV.tail.head, mejorMovV.head + 1, mejorMovV.tail.tail.head, matriz)))
+        } else if (mejorMovH != List(0) && mejorMovV == List(0)) {
+          println("El mejor movimiento es una captura horizontal \n " +
+            "Mueve la ficha de:[" + mejorMovH.head + "," + mejorMovH.tail.head + "] por [" + mejorMovH.head + "," + mejorMovH.tail.tail.head + "]")
+          quiereMoverFicha(actualizarTablero(intercambiar(mejorMovH.head, mejorMovH.tail.head, mejorMovH.head, mejorMovH.tail.tail.head, matriz)))
+        } else {
+          val valorH = mejorMovH(4)
+          val valorV = mejorMovV(5)
+          if (valorH >= valorV) {
+            println("El mejor movimiento es una captura horizontal \n " +
+              "Mueve la ficha de:[" + mejorMovH.head + "," + mejorMovH.tail.head + "] por [" + mejorMovH.head + "," + mejorMovH.tail.tail.head + "]")
+            quiereMoverFicha(actualizarTablero(intercambiar(mejorMovH.head, mejorMovH.tail.head, mejorMovH.head, mejorMovH.tail.tail.head, matriz)))
+          } else println("El mejor movimiento es una captura vertical \n " +
+            "Mueve la ficha de:[" + mejorMovV.head + "," + mejorMovH.tail.head + "] por [" + mejorMovV.head + 1 + "," + mejorMovV.tail.tail.head + "]")
+          quiereMoverFicha(actualizarTablero(intercambiar(mejorMovV.head, mejorMovV.tail.head, mejorMovV.head + 1, mejorMovV.tail.tail.head, matriz)))
+        }
+      }else if(respuesta1 == "exit" || respuesta1 == "Exit"|| respuesta1 == "EXIT"){
+        matriz
+      }
+      else matriz
+    }
+
+    jugar(matriz)
+
+  }
+}

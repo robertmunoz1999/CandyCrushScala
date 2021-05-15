@@ -6,9 +6,9 @@ import scala.util.Random
 object pruebas {
   def main(args: Array[String]): Unit = {
 
-    val lista = List(0, 1, 2, 3, 4)
-    println(lista.tail.tail.tail.head)
+    val lista = List(2, 4, 3, 4, 6)
     println(lista.tail.tail.tail.tail.head)
+
 
 
   }
