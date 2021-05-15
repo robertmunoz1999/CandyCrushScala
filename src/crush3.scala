@@ -15,7 +15,7 @@ object crush3 {
       List(1, 4, 3, 3, 2, 3, 3),
       List(2, 1, 4, 6, 6, 5, 2),
       List(2, 2, 3, 1, 2, 6, 6),
-      List(1, 6, 2, 4, 4, 3, 4),
+      List(1, 6, 1, 4, 4, 3, 4),
       List(5, 2, 5, 6, 4, 4, 2),
       List(1, 6, 1, 6, 2, 3, 3),
       List(2, 5, 3, 3, 3, 4, 1))
@@ -89,6 +89,7 @@ object crush3 {
       else
         lista.head :: extraerLista(lista.tail, ancho - 1)
 
+    @tailrec
     def cogerResto(lista: List[Int], ancho: Int): List[Int] =
       if (lista.isEmpty || ancho == 0)
         lista
@@ -117,8 +118,9 @@ object crush3 {
         val matrizFlatten = matriz.flatten
         val valorOr = leerElemento(xor, yor, matriz)
         val valorDes = leerElemento(xdes, ydes, matriz)
-        printf("Se cambia el valor %d por el valor %d \n", valorOr, valorDes)
+        //printf("Se cambia el valor %d por el valor %d \n", valorOr, valorDes)
         convertirEnListaDeLista(poner(valorOr, posDes, poner(valorDes, posOr, matrizFlatten)), 7)
+
       }
       else {
         print("¡Movimiento ilegal!")
@@ -151,13 +153,7 @@ object crush3 {
     }
 
     def recalcularTableroCeros(x: Int, y: Int, matriz: List[List[Int]]) = {
-      val matriz2 = insertarEnFila(x + 2, 0, insertarEnFila(x + 1, 0, insertarEnFila(x, 0, matriz.head))) :: matriz.tail
-      if (y != 0) {
-        matriz2.head :: recalcularTableroAux(x, y, 1, matriz, matriz2.tail)
-      }
-      else {
-        matriz2
-      }
+      poner(0, x * 7 + y, poner(0, x * 7 + y + 1, poner(0, x * 7 + y + 2, matriz.flatten))).grouped(7).toList
     }
 
     def iguales(x: Int, y: Int, z: Int): Boolean = {
@@ -231,6 +227,7 @@ object crush3 {
 
     }
 
+    @tailrec
     def quiereMoverFicha(matriz: List[List[Int]]): List[List[Int]] = {
       printf("¿Quieres mover ficha?           Si/No\n->")
       val respuesta1 = readLine()
@@ -288,17 +285,17 @@ object crush3 {
       if (lista.isEmpty || (pos > 53)) {
         Nil
       } else { //((pos%7)+7 != 12) &&((pos%7)+7 != 13) con este se evita mirar en casillas donde es imposible darse el caso
-        if ((lista(pos + 1) == lista(pos + 2)) && (lista(pos + 1) == lista(pos + 7)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) {             //X00
-          List[Int](pos / 7, pos - (pos / 7) * 7, (pos + 7) - (pos / 7) * 7, pos - (pos / 7) * 7) :: calcularPosicionIdoneaVertical(lista, pos + 1)   //0XX
+        if ((lista(pos + 1) == lista(pos + 2)) && (lista(pos + 1) == lista(pos + 7)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) {              //X00
+          List[Int](pos / 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos / 7) :: calcularPosicionIdoneaVertical(lista, pos + 1) //0XX
+        } // FILA , POS EN FILA, POS EN FILA+1,POS TRÍO,FILA TRÍO
+        else if ((lista(pos) == lista(pos + 1)) && (lista(pos) == lista(pos + 9)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) {                             //00X
+          List[Int](pos / 7, (pos + 2) - (pos / 7) * 7, (pos + 2) - (pos / 7) * 7, pos - (pos / 7) * 7, pos / 7) :: calcularPosicionIdoneaVertical(lista, pos + 1) //XX0
         }
-        else if ((lista(pos) == lista(pos + 1)) && (lista(pos) == lista(pos + 9)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) {                        //00X
-          List[Int](pos / 7, (pos + 2) - (pos / 7) * 7, (pos + 9) - (pos / 7) * 7, (pos) - (pos / 7) * 7) :: calcularPosicionIdoneaVertical(lista, pos + 1)   //XX0
+        else if ((lista(pos + 8) == lista(pos + 9)) && (lista(pos + 8) == lista(pos)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) {                 //0XX
+          List[Int](pos / 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos / 7 + 1) :: calcularPosicionIdoneaVertical(lista, pos + 1) //X00
         }
-        else if ((lista(pos + 8) == lista(pos + 9)) && (lista(pos + 8) == lista(pos)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) {                //0XX
-          List[Int](pos / 7, pos - (pos / 7) * 7, (pos + 7) - (pos / 7) * 7, (pos + 7) - (pos / 7) * 7) :: calcularPosicionIdoneaVertical(lista, pos + 1) //X00
-        }
-        else if ((lista(pos + 5) == lista(pos + 6)) && (lista(pos + 5) == lista(pos)) && ((pos % 7) != 0) && ((pos % 7) + 7 != 1)) {                        //XX0
-          List[Int](pos / 7, pos - (pos / 7) * 7, (pos + 7) - (pos / 7) * 7, (pos + 5) - (pos / 7) * 7) :: calcularPosicionIdoneaVertical(lista, pos + 1)   //00X
+        else if ((lista(pos + 5) == lista(pos + 6)) && (lista(pos + 5) == lista(pos)) && ((pos % 7) != 0) && ((pos % 7) + 7 != 1)) {                             //XX0
+          List[Int](pos / 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, (pos - 2) - (pos / 7) * 7, pos / 7 + 1) :: calcularPosicionIdoneaVertical(lista, pos + 1) //00X
         }
 
         else {
@@ -312,29 +309,43 @@ object crush3 {
     }
 
 
-    def mejorMovimiento(matriz: List[Int], listadejugadas: List[List[Int]], mejorJugada: List[Int], maximo: Int): List[Int] = {
-      println(listadejugadas.length)
+    @tailrec
+    def mejorMovimientoHorizontal(matriz: List[Int], listadejugadas: List[List[Int]], mejorJugada: List[Int], maximo: Int): List[Any] = {
       if (listadejugadas == Nil)
-        return mejorJugada
+        return List(mejorJugada, maximo)
       val jugadaActual = listadejugadas.head
-      val matrizPostJugada = intercambiar(jugadaActual.tail.head, jugadaActual.head, jugadaActual.tail.tail.head, jugadaActual.head, matriz.grouped(7).toList)
+      //println(jugadaActual)
+      val matrizPostJugada = intercambiar(jugadaActual.head, jugadaActual.tail.head, jugadaActual.head, jugadaActual.tail.tail.head, matriz.grouped(7).toList)
+      //imprimirMatriz(matrizPostJugada)
       val matrizPostJugadaRecalc = recalcularTableroCeros(jugadaActual.tail.tail.tail.head, jugadaActual.head, matrizPostJugada)
       val idoneas = calcularPosicionIdonea(matrizPostJugadaRecalc, 0).length
       val iguales = contarIgualesTablero(matrizPostJugadaRecalc, 0)
       val valordejugada = idoneas + iguales * 2 //Probar y cambiar
-      println("para la jugada ", jugadaActual, " valr: ", valordejugada)
-      imprimirMatriz(matrizPostJugadaRecalc)
       if (valordejugada > maximo)
-        mejorMovimiento(matriz, listadejugadas.tail, jugadaActual, valordejugada)
+        mejorMovimientoHorizontal(matriz, listadejugadas.tail, jugadaActual, valordejugada)
       else
-        mejorMovimiento(matriz, listadejugadas.tail, mejorJugada, maximo)
+        mejorMovimientoHorizontal(matriz, listadejugadas.tail, mejorJugada, maximo)
     }
 
-    println(calcularPosicionIdoneaVertical(matriz2, 0))
-    //println(calcularPosicionIdonea(matriz1,0))
-    //jugar(matriz1)
+    @tailrec
+    def mejorMovimientoVertical(matriz: List[Int], listadejugadas: List[List[Int]], mejorJugada: List[Int], maximo: Int): List[Any] = {
+      if (listadejugadas == Nil)
+        return List(mejorJugada, maximo)
+      val jugadaActual = listadejugadas.head
+      //print(jugadaActual)
+      val matrizPostJugada = intercambiar(jugadaActual.head, jugadaActual.tail.head, jugadaActual.head + 1, jugadaActual.tail.tail.head, matriz.grouped(7).toList)
+      val matrizPostJugadaRecalc = recalcularTableroCeros(jugadaActual.tail.tail.tail.tail.head, jugadaActual.tail.tail.tail.head, matrizPostJugada)
+      val idoneas = calcularPosicionIdonea(matrizPostJugadaRecalc, 0).length
+      val iguales = contarIgualesTablero(matrizPostJugadaRecalc, 0)
+      val valordejugada = idoneas + iguales * 2 //Probar y cambiar
+      //println("->Valor jugada:",valordejugada)
+      if (valordejugada > maximo)
+        mejorMovimientoVertical(matriz, listadejugadas.tail, jugadaActual, valordejugada)
+      else
+        mejorMovimientoVertical(matriz, listadejugadas.tail, mejorJugada, maximo)
+    }
 
-
+    print(mejorMovimientoVertical(matriz2, calcularPosicionIdoneaVertical(matriz2, 0), List(), 0))
   }
 
 
