@@ -10,13 +10,13 @@ object crush3 {
 
 
     var matriz1: List[List[Int]] = List(
-      List(2, 3, 3, 1, 2, 6, 6),
-      List(1, 5, 6, 3, 6, 3, 1),
+      List(2, 1, 3, 1, 2, 6, 6),
+      List(1, 2, 2, 3, 6, 3, 1),
       List(1, 4, 3, 3, 2, 3, 3),
       List(2, 1, 4, 6, 6, 5, 2),
       List(2, 2, 3, 1, 2, 6, 6),
       List(1, 6, 2, 4, 4, 3, 4),
-      List(5, 2, 5, 6, 6, 3, 2),
+      List(5, 2, 5, 6, 4, 4, 2),
       List(1, 6, 1, 6, 2, 3, 3),
       List(2, 5, 3, 3, 3, 4, 1))
     val matriz2 = matriz1.flatten
@@ -285,14 +285,20 @@ object crush3 {
     }
 
     def calcularPosicionIdoneaVertical(lista: List[Int], pos: Int): List[List[Int]] = {
-      if (lista.isEmpty || pos>55) {
+      if (lista.isEmpty || (pos > 53)) {
         Nil
-      } else {                                     //((pos%7)+7 != 12) &&((pos%7)+7 != 13) con este se evita mirar en casillas donde es imposible darse el caso
-        if ((lista(pos + 1) == lista(pos + 2)) && ((pos%7)+7 != 12) &&((pos%7)+7 != 13) && (lista(pos + 1) == lista(pos + 7))  ) { //||
-          List[Int](pos/7, pos, pos + 7, pos) :: calcularPosicionIdoneaVertical(lista, pos + 1)
+      } else { //((pos%7)+7 != 12) &&((pos%7)+7 != 13) con este se evita mirar en casillas donde es imposible darse el caso
+        if ((lista(pos + 1) == lista(pos + 2)) && (lista(pos + 1) == lista(pos + 7)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) {             //X00
+          List[Int](pos / 7, pos - (pos / 7) * 7, (pos + 7) - (pos / 7) * 7, pos - (pos / 7) * 7) :: calcularPosicionIdoneaVertical(lista, pos + 1)   //0XX
         }
-        else if((lista(pos + 1) == lista(pos + 2)) && ((pos%7)+7 != 12) &&((pos%7)+7 != 13) && (lista(pos+1) == (lista(pos+10)))   ) {
-          List[Int](pos/7, pos + 3, pos + 10, pos+1) :: calcularPosicionIdoneaVertical(lista, pos + 1)
+        else if ((lista(pos) == lista(pos + 1)) && (lista(pos) == lista(pos + 9)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) {                        //00X
+          List[Int](pos / 7, (pos + 2) - (pos / 7) * 7, (pos + 9) - (pos / 7) * 7, (pos) - (pos / 7) * 7) :: calcularPosicionIdoneaVertical(lista, pos + 1)   //XX0
+        }
+        else if ((lista(pos + 8) == lista(pos + 9)) && (lista(pos + 8) == lista(pos)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) {                //0XX
+          List[Int](pos / 7, pos - (pos / 7) * 7, (pos + 7) - (pos / 7) * 7, (pos + 7) - (pos / 7) * 7) :: calcularPosicionIdoneaVertical(lista, pos + 1) //X00
+        }
+        else if ((lista(pos + 5) == lista(pos + 6)) && (lista(pos + 5) == lista(pos)) && ((pos % 7) != 0) && ((pos % 7) + 7 != 1)) {                        //XX0
+          List[Int](pos / 7, pos - (pos / 7) * 7, (pos + 7) - (pos / 7) * 7, (pos + 5) - (pos / 7) * 7) :: calcularPosicionIdoneaVertical(lista, pos + 1)   //00X
         }
 
         else {
@@ -304,10 +310,6 @@ object crush3 {
         }
       }
     }
-    println(calcularPosicionIdoneaVertical(matriz2,0))
-
-
-
 
 
     def mejorMovimiento(matriz: List[Int], listadejugadas: List[List[Int]], mejorJugada: List[Int], maximo: Int): List[Int] = {
@@ -327,9 +329,10 @@ object crush3 {
       else
         mejorMovimiento(matriz, listadejugadas.tail, mejorJugada, maximo)
     }
+
+    println(calcularPosicionIdoneaVertical(matriz2, 0))
     //println(calcularPosicionIdonea(matriz1,0))
     //jugar(matriz1)
-
 
 
   }
