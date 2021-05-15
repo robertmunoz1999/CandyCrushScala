@@ -21,9 +21,6 @@ object crush3 {
       List(2, 5, 1, 6, 2, 4, 1))
 
 
-
-
-
     @tailrec
     def crearLista(lista: List[Int], longitud: Int): List[Int] =
       if (longitud == 0)
@@ -326,7 +323,7 @@ object crush3 {
       print("¿Quieres jugar?             Si/No\n->")
       val respuesta = readLine()
 
-      if (respuesta == "Si" || respuesta == "si"|| respuesta == "SI" ) {
+      if (respuesta == "Si" || respuesta == "si" || respuesta == "SI") {
         val matrizAct = actualizarTablero(matriz)
         quiereMoverFicha(matrizAct)
       }
@@ -335,42 +332,50 @@ object crush3 {
     }
 
 
-
     def quiereMoverFicha(matriz: List[List[Int]]): List[List[Int]] = {
-      printf("*Si quiere mover ficha introduzca ---> M \n*Si quiere una pista introduzca ---> P \n*Si quiere salir introduzca ---> Exit  \n->")
-      val respuesta1 = readLine()
-      if (respuesta1 == "M" || respuesta1 == "m") {
-        quiereMoverFicha(moverFicha(matriz))
-      } else if (respuesta1 == "p" || respuesta1 == "P") {
-        val mejorMovV = mejorMovimientoVertical(matriz.flatten, calcularPosicionIdoneaVertical(matriz.flatten, 0), List(), 0)
-        val mejorMovH = mejorMovimientoHorizontal(matriz.flatten, calcularPosicionIdonea(matriz, 0), List(), 0)
-        println(mejorMovV,mejorMovH)
-        if (mejorMovV == List(0) && mejorMovH == List(0)) {
-          println("No se han encontrado jugadas óptimas.")
-          quiereMoverFicha(matriz)
-        } else if (mejorMovV != List(0) && mejorMovH == List(0)) {
-          println("El mejor movimiento es una captura vertical \n " +
-            "Mueve la ficha de:[" + mejorMovV.head + "," + mejorMovV.tail.head + "] por [" + mejorMovV.head + 1 + "," + mejorMovV.tail.tail.head + "]")
-          quiereMoverFicha(actualizarTablero(intercambiar(mejorMovV.head, mejorMovV.tail.head, mejorMovV.head + 1, mejorMovV.tail.tail.head, matriz)))
-        } else if (mejorMovH != List(0) && mejorMovV == List(0)) {
-          println("El mejor movimiento es una captura horizontal \n " +
-            "Mueve la ficha de:[" + mejorMovH.head + "," + mejorMovH.tail.head + "] por [" + mejorMovH.head + "," + mejorMovH.tail.tail.head + "]")
-          quiereMoverFicha(actualizarTablero(intercambiar(mejorMovH.head, mejorMovH.tail.head, mejorMovH.head, mejorMovH.tail.tail.head, matriz)))
-        } else {
-          val valorH = mejorMovH(4)
-          val valorV = mejorMovV(5)
-          if (valorH >= valorV) {
+      if (matriz == Nil) {
+        println("Saliendo...")
+        Nil
+      } else {
+        printf("*Si quiere mover ficha introduzca ---> M \n*Si quiere una pista introduzca ---> P \n*Si quiere salir introduzca ---> Exit  \n->")
+        val respuesta1 = readLine()
+        if (respuesta1 == "M" || respuesta1 == "m") {
+          quiereMoverFicha(moverFicha(matriz))
+        } else if (respuesta1 == "p" || respuesta1 == "P") {
+          val mejorMovV = mejorMovimientoVertical(matriz.flatten, calcularPosicionIdoneaVertical(matriz.flatten, 0), List(), 0)
+          val mejorMovH = mejorMovimientoHorizontal(matriz.flatten, calcularPosicionIdonea(matriz, 0), List(), 0)
+          println(mejorMovV, mejorMovH)
+          if (mejorMovV == List(0) && mejorMovH == List(0)) {
+            println("No se han encontrado jugadas óptimas.")
+            quiereMoverFicha(matriz)
+          } else if (mejorMovV != List(0) && mejorMovH == List(0)) {
+            println("El mejor movimiento es una captura vertical \n " +
+              "Mueve la ficha de:[" + mejorMovV.head + "," + mejorMovV.tail.head + "] por [" + mejorMovV.head + 1 + "," + mejorMovV.tail.tail.head + "]")
+            quiereMoverFicha(actualizarTablero(intercambiar(mejorMovV.head, mejorMovV.tail.head, mejorMovV.head + 1, mejorMovV.tail.tail.head, matriz)))
+          } else if (mejorMovH != List(0) && mejorMovV == List(0)) {
             println("El mejor movimiento es una captura horizontal \n " +
               "Mueve la ficha de:[" + mejorMovH.head + "," + mejorMovH.tail.head + "] por [" + mejorMovH.head + "," + mejorMovH.tail.tail.head + "]")
             quiereMoverFicha(actualizarTablero(intercambiar(mejorMovH.head, mejorMovH.tail.head, mejorMovH.head, mejorMovH.tail.tail.head, matriz)))
-          } else println("El mejor movimiento es una captura vertical \n " +
-            "Mueve la ficha de:[" + mejorMovV.head + "," + mejorMovH.tail.head + "] por [" + mejorMovV.head + 1 + "," + mejorMovV.tail.tail.head + "]")
-          quiereMoverFicha(actualizarTablero(intercambiar(mejorMovV.head, mejorMovV.tail.head, mejorMovV.head + 1, mejorMovV.tail.tail.head, matriz)))
+          } else {
+            val valorH = mejorMovH(4)
+            val valorV = mejorMovV(5)
+            if (valorH >= valorV) {
+              println("El mejor movimiento es una captura horizontal \n " +
+                "Mueve la ficha de:[" + mejorMovH.head + "," + mejorMovH.tail.head + "] por [" + mejorMovH.head + "," + mejorMovH.tail.tail.head + "]")
+              quiereMoverFicha(actualizarTablero(intercambiar(mejorMovH.head, mejorMovH.tail.head, mejorMovH.head, mejorMovH.tail.tail.head, matriz)))
+            } else println("El mejor movimiento es una captura vertical \n " +
+              "Mueve la ficha de:[" + mejorMovV.head + "," + mejorMovH.tail.head + "] por [" + mejorMovV.head + 1 + "," + mejorMovV.tail.tail.head + "]")
+            quiereMoverFicha(actualizarTablero(intercambiar(mejorMovV.head, mejorMovV.tail.head, mejorMovV.head + 1, mejorMovV.tail.tail.head, matriz)))
+          }
+        } else if (respuesta1 == "exit" || respuesta1 == "Exit" || respuesta1 == "EXIT") {
+          quiereMoverFicha(Nil)
         }
-      }else if(respuesta1 == "exit" || respuesta1 == "Exit"|| respuesta1 == "EXIT"){
-        matriz
+        else if ((respuesta1 != "exit") || (respuesta1 != "P") || (respuesta1 != "p") || (respuesta1 != "M") || (respuesta1 != "m") || (respuesta1 != "Exit") || (respuesta1 != "EXIT")) {
+            println("Comando no reconocido, inténtelo de nuevo a continuación:")
+          quiereMoverFicha(matriz)
+        }
+        else Nil
       }
-      else matriz
     }
 
     jugar(matriz)
