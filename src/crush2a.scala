@@ -2,11 +2,11 @@ import scala.annotation.tailrec
 import scala.io.StdIn.readLine
 import scala.util.Random
 
-
 object crush2a {
 
-
   def main(args: Array[String]): Unit = {
+    val matriz = crearTablero(List[List[Int]](), 9)
+    jugar(matriz)}
 
     val r: Random.type = scala.util.Random
 
@@ -65,7 +65,7 @@ object crush2a {
       print(" ═══  ═══  ═══  ═══  ═══  ═══  ═══ ╝\n  0    1    2    3    4    5    6 \n")
     }
 
-    //Reduccion de codigo, uso de grouped y toList
+    //Reducción de código, uso de grouped y toList
     def convertirEnListaDeLista(lista: List[Int], ancho: Int): List[List[Int]] =
       lista.grouped(ancho).toList
 
@@ -182,7 +182,4 @@ object crush2a {
       val columnaDes = readLine()
       actualizarTablero(intercambiar(filaOr.toInt, columnaOr.toInt, filaDes.toInt, columnaDes.toInt, matriz))
     }
-    val matriz = crearTablero(List[List[Int]](), 9)
-    jugar(matriz)
-  }
 }
