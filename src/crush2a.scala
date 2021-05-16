@@ -10,26 +10,12 @@ object crush2a {
 
     val r: Random.type = scala.util.Random
 
-
-    var matriz1: List[List[Int]] = List(
-      List(2, 0, 4, 8, 7, 6, 8),
-      List(3, 5, 6, 8, 6, 3, 1),
-      List(1, 4, 8, 6, 3, 0, 4),
-      List(2, 8, 0, 7, 8, 8, 0),
-      List(3, 3, 2, 1, 7, 3, 6),
-      List(0, 6, 2, 4, 5, 7, 4),
-      List(5, 2, 0, 6, 8, 7, 2),
-      List(1, 6, 2, 6, 1, 3, 3),
-      List(5, 5, 5, 1, 4, 4, 4))
-
-
     @tailrec
     def crearLista(lista: List[Int], longitud: Int): List[Int] =
       if (longitud == 0)
         lista
       else
         crearLista((1 + r.nextInt(6)) :: lista, longitud - 1)
-
 
     @tailrec
     def crearTablero(lista: List[List[Int]], filas: Int): List[List[Int]] =
@@ -38,16 +24,12 @@ object crush2a {
       else
         crearTablero(crearLista(List[Int](), 7) :: lista, filas - 1)
 
-    val matriz = crearTablero(List[List[Int]](), 9)
-
-
     @tailrec
     def leerFila(fila: Int, lista: List[List[Int]]): List[Int] =
       if (fila == 0)
         lista.head
       else
         leerFila(fila - 1, lista.tail)
-
 
     @tailrec
     def leerElementoDeFila(elemento: Int, lista: List[Int]): Int =
@@ -56,61 +38,51 @@ object crush2a {
       else
         leerElementoDeFila(elemento - 1, lista.tail)
 
-
     def leerElemento(y: Int, x: Int, matriz: List[List[Int]]): Int =
       leerElementoDeFila(x, leerFila(y, matriz))
 
-    @tailrec
+    @tailrec //Método que muestra por pantalla una fila (lista de enteros).
     def imprimirFila(fila: List[Int]): Unit = {
       if (fila.nonEmpty) {
+        print("  ")
         print(fila.head)
-        print(" ")
+        print("  ")
         imprimirFila(fila.tail)
-
       }
     }
 
-
-    @tailrec //Actualizado con .length
-    def imprimirMatriz1(matriz: List[List[Int]]): Unit =
+    @tailrec //Método auxiliar para el método de imprimirMatriz. Hace el trabajo de imprimir todos los elementos.
+    def imprimirMatrizAux(matriz: List[List[Int]], cont: Int): Unit =
       if (matriz.nonEmpty) {
         imprimirFila(leerFila(0, matriz))
-        printf("║  %d\n", 9 - matriz.length)
-        imprimirMatriz1(matriz.tail)
+        printf("║  %d\n", 9 - cont % 10) //Muestra una guía lateral para las filas
+        imprimirMatrizAux(matriz.tail, cont - 1)
       }
 
+    //Método principal para imprimirla matriz. Se basa en imprimirMatrizAux y añadir una guía de columnas.
     def imprimirMatriz(matriz: List[List[Int]]): Unit = {
-      imprimirMatriz1(matriz)
-      print("═ ═ ═ ═ ═ ═ ═ ╝\n0 1 2 3 4 5 6 \n")
+      imprimirMatrizAux(matriz, 9)
+      print(" ═══  ═══  ═══  ═══  ═══  ═══  ═══ ╝\n  0    1    2    3    4    5    6 \n")
     }
 
     //Reduccion de codigo, uso de grouped y toList
     def convertirEnListaDeLista(lista: List[Int], ancho: Int): List[List[Int]] =
       lista.grouped(ancho).toList
 
-
-    def poner(valor: Int, posicion: Int, lista: List[Int]): List[Int] =
-      if (posicion == 0)
-        valor :: lista.tail
-      else
-        lista.head :: poner(valor, posicion - 1, lista.tail)
-
-
     def intercambiar(xor: Int, yor: Int, xdes: Int, ydes: Int, matriz: List[List[Int]]): List[List[Int]] = {
       val posOr = xor * matriz.head.length + yor
       val posDes = xdes * matriz.head.length + ydes
-      if ((((xor - xdes).abs) <= 1) && (((yor - ydes).abs) <= 1) && !((((xor - xdes).abs) == 1) && (((yor - ydes).abs) == 1)) && (posOr < 63) && (posDes < 63)) {
+      if (((xor - xdes).abs <= 1) && ((yor - ydes).abs <= 1) && !(((xor - xdes).abs == 1) && ((yor - ydes).abs == 1)) && (posOr < 63) && (posDes < 63)) {
         val matrizFlatten = matriz.flatten
         val valorOr = leerElemento(xor, yor, matriz)
         val valorDes = leerElemento(xdes, ydes, matriz)
         printf("Se cambia el valor %d por el valor %d \n", valorOr, valorDes)
-        convertirEnListaDeLista(poner(valorOr, posDes, poner(valorDes, posOr, matrizFlatten)), 7)
+        convertirEnListaDeLista(insertarEnFila(posDes, valorOr, insertarEnFila(posOr, valorDes, matrizFlatten)), 7)
       }
       else {
         print("¡Movimiento ilegal!")
         matriz
       }
-
     }
 
     def insertarEnFila(posicion: Int, numero: Int, lista: List[Int]): List[Int] =
@@ -127,7 +99,7 @@ object crush2a {
     }
 
     def recalcularTablero(x: Int, y: Int, matriz: List[List[Int]]) = {
-      val matriz2 = insertarEnFila(x + 2, (1 + r.nextInt(6)), insertarEnFila(x + 1, (1 + r.nextInt(6)), insertarEnFila(x, (1 + r.nextInt(6)), matriz.head))) :: matriz.tail
+      val matriz2 = insertarEnFila(x + 2, 1 + r.nextInt(6), insertarEnFila(x + 1, 1 + r.nextInt(6), insertarEnFila(x, 1 + r.nextInt(6), matriz.head))) :: matriz.tail
       if (y != 0) {
         matriz2.head :: recalcularTableroAux(x, y, 1, matriz, matriz2.tail)
       }
@@ -177,7 +149,6 @@ object crush2a {
       }
     }
 
-
     def jugar(matriz: List[List[Int]]): Unit = {
       imprimirMatriz(matriz)
       print("¿Quieres jugar?             Si/No\n->")
@@ -211,9 +182,7 @@ object crush2a {
       val columnaDes = readLine()
       actualizarTablero(intercambiar(filaOr.toInt, columnaOr.toInt, filaDes.toInt, columnaDes.toInt, matriz))
     }
-
+    val matriz = crearTablero(List[List[Int]](), 9)
     jugar(matriz)
   }
-
-
 }
