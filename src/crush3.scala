@@ -15,16 +15,17 @@ object crush3 {
       List(3, 1, 5, 3, 3, 5, 2),
       List(2, 1, 6, 6, 2, 4, 1),
       List(2, 1, 2, 4, 2, 3, 4))
-    val matriz4: List[List[Int]] = List(
-      List(5, 3, 4, 2, 1, 1, 6),
-      List(6, 3, 5, 1, 1, 4, 3),
-      List(3, 3, 2, 3, 6, 2, 4),
-      List(6, 5, 3, 1, 3, 4, 1),
-      List(6, 5, 6, 4, 5, 4, 4),
-      List(6, 5, 2, 4, 4, 3, 2),
-      List(1, 4, 5, 6, 2, 5, 1),
-      List(6, 3, 2, 6, 6, 3, 2),
-      List(1, 6, 4, 6, 5, 3, 5))
+    val matriz5: List[List[Int]] = List(
+      List(1, 1, 6, 6, 3, 4, 1),
+      List(6, 5, 3, 2, 4, 3, 4),
+      List(4, 3, 4, 5, 4, 3, 1),
+      List(1, 2, 4, 3, 2, 5, 3),
+      List(5, 2, 1, 6, 3, 6, 4),
+      List(6, 6, 3, 4, 5, 2, 4),
+      List(5, 5, 5, 5, 6, 2, 4),
+      List(5, 5, 5, 5, 3, 6, 5),
+      List(5, 4, 5, 5, 4, 2, 2))
+
 
     val r: Random.type = scala.util.Random
 
@@ -226,10 +227,10 @@ object crush3 {
       if (lista.isEmpty || lista.length < 4) //La lista se va reduciendo con tail en la recursividad, mínimo 4 números para darse este caso.
         Nil
       else { //Cada jugada idónea se almacena con (FILA-POSICION1-POSICION2-POSICION DONDE QUEDA EL TRÍO)     //Solo se guarda un valor Fila ya que es la misma.
-        if (lista.head != 0 && lista.head == lista.tail.tail.head && lista.head == lista.tail.tail.tail.head) { //0X00     //Caso Horizontal por la izquierda
-          List[Int](fila, pos + 1, pos, pos + 1) :: calcularPosicionIdoneaFila(lista.tail, pos + 1, fila)
-        } else if (lista.head != 0 && lista.head == lista.tail.head && lista.head == lista.tail.tail.tail.head) { //00X0   //Caso Horizontal por la derecha
-          List[Int](fila, pos + 2, pos + 3, pos) :: calcularPosicionIdoneaFila(lista.tail, pos + 1, fila)
+        if (lista.head != 0 && lista.head == lista.tail.tail.head && lista.head == lista.tail.tail.tail.head && !iguales(lista.tail.head, lista.tail.tail.head, lista.tail.tail.tail.head)) {
+          List[Int](fila, pos + 1, pos, pos + 1) :: calcularPosicionIdoneaFila(lista.tail, pos + 1, fila) //0X00     //Caso Horizontal por la izquierda
+        } else if (lista.head != 0 && lista.head == lista.tail.head && lista.head == lista.tail.tail.tail.head && !iguales(lista.head, lista.tail.head, lista.tail.tail.head)) {
+          List[Int](fila, pos + 2, pos + 3, pos) :: calcularPosicionIdoneaFila(lista.tail, pos + 1, fila) //00X0   //Caso Horizontal por la derecha
         }
         else {
           val calculo = calcularPosicionIdoneaFila(lista.tail, pos + 1, fila)
@@ -259,18 +260,18 @@ object crush3 {
       if (pos > 53) { //Para evitar posiciones fuera el índice de la matriz. Cada posición comprueba un caso, salvo que no el patrón no sea posible (no haya más elementos debajo)
         Nil
       } else { //Cada IF comprueba el patrón de cada uno de los 4 casos vistos.
-        if ((lista(pos + 1) == lista(pos + 2)) && (lista(pos + 1) == lista(pos + 7)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) //          CASO 1      X00
-          List[Int](pos / 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos / 7) :: calcularPosicionIdoneaVertical(lista, pos + 1) //       0XX
-        else if ((lista(pos) == lista(pos + 1)) && (lista(pos) == lista(pos + 9)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) //             CASO 2                 00X
-          List[Int](pos / 7, (pos + 2) - (pos / 7) * 7, (pos + 2) - (pos / 7) * 7, pos - (pos / 7) * 7, pos / 7) :: calcularPosicionIdoneaVertical(lista, pos + 1) //      XX0
-        else if ((lista(pos + 8) == lista(pos + 9)) && (lista(pos + 8) == lista(pos)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) //         CASO 3       0XX
+        if ((lista(pos + 1) == lista(pos + 2)) && (lista(pos + 1) == lista(pos + 7)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13) && (!iguales(leerElementoDeFila(pos, lista), leerElementoDeFila(pos + 1, lista), leerElementoDeFila(pos + 2, lista)))) //          CASO 1      X00
+          List[Int](pos / 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos / 7) :: calcularPosicionIdoneaVertical(lista, pos + 1) //                                                          0XX
+        else if ((lista(pos) == lista(pos + 1)) && (lista(pos) == lista(pos + 9)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13) && (!iguales(leerElementoDeFila(pos, lista), leerElementoDeFila(pos + 1, lista), leerElementoDeFila(pos + 2, lista)))) //             CASO 2                 00X
+          List[Int](pos / 7, (pos + 2) - (pos / 7) * 7, (pos + 2) - (pos / 7) * 7, pos - (pos / 7) * 7, pos / 7) :: calcularPosicionIdoneaVertical(lista, pos + 1) //                                                        XX0
+        else if ((lista(pos + 8) == lista(pos + 9)) && (lista(pos + 8) == lista(pos)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13) && (!iguales(lista(pos + 7), lista(pos + 8), lista(pos + 9)))) //         CASO 3       0XX
           List[Int](pos / 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos / 7 + 1) :: calcularPosicionIdoneaVertical(lista, pos + 1) //    X00
-        else if ((lista(pos + 5) == lista(pos + 6)) && (lista(pos + 5) == lista(pos)) && ((pos % 7) != 0) && ((pos % 7) + 7 != 8)) //   CASO 4           XX0
+        else if ((lista(pos + 5) == lista(pos + 6)) && (lista(pos + 5) == lista(pos)) && ((pos % 7) != 0) && ((pos % 7) + 7 != 8) && (!iguales(lista(pos + 5), lista(pos + 6), lista(pos + 7)))) //                           CASO 4           XX0
           List[Int](pos / 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, (pos - 2) - (pos / 7) * 7, pos / 7 + 1) :: calcularPosicionIdoneaVertical(lista, pos + 1) //              00X
-        else if ((lista(pos) == lista(pos + 2)) && (lista(pos) == lista(pos + 8)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) //   CASO 5           0X0  X0X
-          List[Int](pos / 7, pos + 1 - (pos / 7) * 7, pos + 1 - (pos / 7) * 7, pos - (pos / 7) * 7, pos / 7) :: calcularPosicionIdoneaVertical(lista, pos + 1)
-        else if ((lista(pos + 8) == lista(pos + 6)) && (lista(pos + 6) == lista(pos)) && ((pos % 7) != 0) && ((pos % 7) + 7 != 13)) //   CASO 6
-          List[Int](pos / 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos - 1 - (pos / 7) * 7, pos / 7 + 1) :: calcularPosicionIdoneaVertical(lista, pos + 1) // X0X 0X0
+        else if ((lista(pos) == lista(pos + 2)) && (lista(pos) == lista(pos + 8)) && ((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13) && (!iguales(lista(pos), lista(pos + 1), lista(pos + 2)))) //                                       CASO 5          0X0
+          List[Int](pos / 7, pos + 1 - (pos / 7) * 7, pos + 1 - (pos / 7) * 7, pos - (pos / 7) * 7, pos / 7) :: calcularPosicionIdoneaVertical(lista, pos + 1) //                             X0X
+        else if ((lista(pos + 8) == lista(pos + 6)) && (lista(pos + 6) == lista(pos)) && ((pos % 7) != 0) && ((pos % 7) + 7 != 13) && (!iguales(lista(pos + 6), lista(pos + 7), lista(pos + 8)))) //                                    CASO 6   X0X
+          List[Int](pos / 7, pos - (pos / 7) * 7, pos - (pos / 7) * 7, pos - 1 - (pos / 7) * 7, pos / 7 + 1) :: calcularPosicionIdoneaVertical(lista, pos + 1) //                  0X0
         //Cada jugada idónea se almacena como (FILA1-POS1-POS2-POS TRÍO-FILA TRÍO) //En este caso la fila de la POS2 siempre será FILA+1, no se guarda para optimizar.
         else {
           calcularPosicionIdoneaVertical(lista, pos + 1)
@@ -404,7 +405,11 @@ object crush3 {
     }
 
     var matriz = crearTablero(List[List[Int]](), 9)
-    jugar(matriz)
+    //jugar(matriz)
+    imprimirMatriz(matriz)
+    println(calcularPosicionIdoneaHorizontal(matriz, 0))
+    println(calcularPosicionIdoneaVertical(matriz.flatten, 0))
+
   }
 }
 
