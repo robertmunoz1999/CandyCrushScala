@@ -264,7 +264,7 @@ object crush3 {
     if (listadejugadas == Nil)
       return mejorJugada :+ maximo //Devuelve una lista con la mejor jugadas y sus datos, y el valor de esta.
     val jugadaActual = listadejugadas.head
-    print(jugadaActual)
+    //print(jugadaActual)
     val matrizPostJugada = intercambiar(jugadaActual.head, jugadaActual.tail.head, jugadaActual.head, jugadaActual.tail.tail.head, matriz.grouped(7).toList)
     //imprimirMatriz(matrizPostJugada)
     val matrizPostJugadaRecalc = recalcularTableroZEROS(jugadaActual.head, jugadaActual.tail.tail.tail.head, matrizPostJugada)
@@ -272,7 +272,7 @@ object crush3 {
     val idoneas = calcularPosicionIdoneaHorizontal(matrizPostJugadaRecalc, 0).length + calcularPosicionIdoneaVertical(matrizPostJugadaRecalc.flatten, 0).length
     val iguales = contarIgualesTablero(matrizPostJugadaRecalc, 0)
     val valordejugada = idoneas + iguales * 2
-    println("->Valor de jugada H " + valordejugada)
+    //println("->Valor de jugada H " + valordejugada)
     if (valordejugada >= maximo) //Si el valor de la jugada analizada es mayor al anterior, cambia la mejorJugada y el maximo
       mejorMovimientoHorizontal(matriz, listadejugadas.tail, jugadaActual, valordejugada)
     else
@@ -284,7 +284,7 @@ object crush3 {
     if (listadejugadas == Nil)
       return mejorJugada :+ maximo //Devuelve una lista con la mejor jugadas y sus datos, y el valor de esta.
     val jugadaActual = listadejugadas.head
-    print(jugadaActual)
+    //print(jugadaActual)
     val matrizPostJugada = intercambiar(jugadaActual.head, jugadaActual.tail.head, jugadaActual.head + 1, jugadaActual.tail.tail.head, matriz.grouped(7).toList)
     //imprimirMatriz(matrizPostJugada) //Primero fila luego columna
     val matrizPostJugadaRecalc = recalcularTableroZEROS(jugadaActual.tail.tail.tail.tail.head, jugadaActual.tail.tail.tail.head, matrizPostJugada)
@@ -292,7 +292,7 @@ object crush3 {
     val idoneas = calcularPosicionIdoneaVertical(matrizPostJugadaRecalc.flatten, 0).length + calcularPosicionIdoneaHorizontal(matrizPostJugadaRecalc, 0).length
     val iguales = contarIgualesTablero(matrizPostJugadaRecalc, 0)
     val valordejugada = idoneas + iguales * 2 //Probar y cambiar
-    println("->Valor de jugada V " + valordejugada)
+    //println("->Valor de jugada V " + valordejugada)
     if (valordejugada >= maximo)
       mejorMovimientoVertical(matriz, listadejugadas.tail, jugadaActual, valordejugada)
     else

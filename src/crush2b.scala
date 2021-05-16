@@ -169,6 +169,7 @@ object crush2b {
     }
     else {
       println()
+      imprimirMatriz(matriz)
       print("Tablero sin repeticiones  \n")
       matriz
     }
