@@ -202,7 +202,7 @@ object crush {
       actualizarTablero(intercambiar(filaOr.toInt, columnaOr.toInt, filaDes.toInt, columnaDes.toInt, matriz))
     }
 
-    var matriz = crearTablero(List[List[Int]](), 9)
+    val matriz = crearTablero(List[List[Int]](), 9)
     jugar(matriz)
   }
 }
