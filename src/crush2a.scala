@@ -5,39 +5,22 @@ import scala.util.Random
 object crush2a {
 
   def main(args: Array[String]): Unit = {
-    val matriz = crearTablero(List[List[Int]](), 9)
-    jugar(matriz)}
 
     val r: Random.type = scala.util.Random
 
-    @tailrec
-    def crearLista(lista: List[Int], longitud: Int): List[Int] =
-      if (longitud == 0)
-        lista
-      else
-        crearLista((1 + r.nextInt(6)) :: lista, longitud - 1)
+    //Actualizando usando fill
+    def crearTablero(): List[List[Int]] =
+      List.fill(63)(1 + r.nextInt(6)).grouped(7).toList
 
-    @tailrec
-    def crearTablero(lista: List[List[Int]], filas: Int): List[List[Int]] =
-      if (filas == 0)
-        lista
-      else
-        crearTablero(crearLista(List[Int](), 7) :: lista, filas - 1)
-
-    @tailrec
+    //Accedemos directamente al elemento
     def leerFila(fila: Int, lista: List[List[Int]]): List[Int] =
-      if (fila == 0)
-        lista.head
-      else
-        leerFila(fila - 1, lista.tail)
+      lista(fila)
 
-    @tailrec
+    //Accedemos directamente al elemento
     def leerElementoDeFila(elemento: Int, lista: List[Int]): Int =
-      if (elemento == 0)
-        lista.head
-      else
-        leerElementoDeFila(elemento - 1, lista.tail)
+      lista(elemento)
 
+    //Accedemos directamente al elemento
     def leerElemento(y: Int, x: Int, matriz: List[List[Int]]): Int =
       leerElementoDeFila(x, leerFila(y, matriz))
 
@@ -109,7 +92,7 @@ object crush2a {
     }
 
     def iguales(x: Int, y: Int, z: Int): Boolean = {
-      if ((x == y) && (x == z)) true; else false
+      (x == y) && (x == z)
     }
 
     @tailrec //Actualizado con .length
@@ -119,20 +102,27 @@ object crush2a {
       else comprobarIgualesFila(fila.tail, tam)
     }
 
-    @tailrec //Actualizado con .length
-    def comprobarIgualesTablero(matriz: List[List[Int]], tam: Int): List[Int] = {
-      if (matriz.isEmpty) Nil //9 - x
-      else {
-        val y = comprobarIgualesFila(matriz.head, 7)
-        if (y >= 0) List(tam - matriz.length, y) //LISTA(x,y)
-        else comprobarIgualesTablero(matriz.tail, tam)
+    //Actualizado usando sliding
+    def comprobarIgualesTablero(matriz: List[Int], pos: Int): List[Int] = {
+      val cabeza = matriz.iterator.sliding(3).toList.head
+      if (matriz != Nil && matriz.length >= 3) {
+        if (((pos % 7) + 7 != 12) && ((pos % 7) + 7 != 13)) {
+          if (iguales(cabeza(0), cabeza(1), cabeza(2)))
+            List[Int](pos / 7, pos % 7)
+          else
+            comprobarIgualesTablero(matriz.tail, pos + 1)
+        }
+        else
+          comprobarIgualesTablero(matriz.tail, pos + 1)
       }
+      else
+        Nil
     }
 
     @tailrec
     def actualizarTablero(matriz: List[List[Int]]): List[List[Int]] = {
-      if (comprobarIgualesTablero(matriz, 9) != Nil) {
-        val coords = comprobarIgualesTablero(matriz, 9)
+      if (comprobarIgualesTablero(matriz.flatten, 0) != Nil) {
+        val coords = comprobarIgualesTablero(matriz.flatten, 0)
         val x = coords.head
         val y = coords(1)
         printf("Eliminando repeticion en  %d %d\n", x, y)
@@ -144,6 +134,7 @@ object crush2a {
       }
       else {
         println()
+        imprimirMatriz(matriz)
         print("Tablero sin repeticiones  \n")
         matriz
       }
@@ -182,4 +173,7 @@ object crush2a {
       val columnaDes = readLine()
       actualizarTablero(intercambiar(filaOr.toInt, columnaOr.toInt, filaDes.toInt, columnaDes.toInt, matriz))
     }
+    val matriz = crearTablero()
+    jugar(matriz)
+  }
 }
