@@ -22,7 +22,6 @@ object crush3 {
     else
       crearLista((1 + r.nextInt(6)) :: lista, longitud - 1)
 
-
   @tailrec //Método para crear una lista de N listas de enteros. Creará el tablero del juego. Usa crearLista para crear las filas.
   def crearTablero(lista: List[List[Int]], filas: Int): List[List[Int]] =
     if (filas == 0)
