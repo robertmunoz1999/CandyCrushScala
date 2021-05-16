@@ -5,27 +5,6 @@ import scala.util.Random
 
 object crush3 {
   def main(args: Array[String]): Unit = {
-    val matriz1: List[List[Int]] = List(
-      List(3, 2, 6, 4, 6, 3, 3),
-      List(1, 4, 1, 1, 6, 3, 6),
-      List(6, 4, 2, 1, 4, 3, 5),
-      List(3, 1, 4, 5, 2, 5, 1),
-      List(6, 1, 5, 5, 4, 3, 3),
-      List(4, 1, 3, 1, 5, 4, 2),
-      List(3, 1, 5, 3, 3, 5, 2),
-      List(2, 1, 6, 6, 2, 4, 1),
-      List(2, 1, 2, 4, 2, 3, 4))
-    val matriz5: List[List[Int]] = List(
-      List(1, 1, 6, 6, 3, 4, 1),
-      List(6, 5, 3, 2, 4, 3, 4),
-      List(4, 3, 4, 5, 4, 3, 1),
-      List(1, 2, 4, 3, 2, 5, 3),
-      List(5, 2, 1, 6, 3, 6, 4),
-      List(6, 6, 3, 4, 5, 2, 4),
-      List(5, 5, 5, 5, 6, 2, 4),
-      List(5, 5, 5, 5, 3, 6, 5),
-      List(5, 4, 5, 5, 4, 2, 2))
-
 
     val r: Random.type = scala.util.Random
 
@@ -90,15 +69,14 @@ object crush3 {
     def imprimirMatriz(matriz: List[List[Int]]): Unit = {
       imprimirMatrizAux(matriz, 9)
       print(" ═══  ═══  ═══  ═══  ═══  ═══  ═══ ╝\n  0    1    2    3    4    5    6 \n")
-      ""
     }
 
-    //Método para poner un Valor pasado, en una posición pasada, en una lista pasada.
-    def poner(valor: Int, posicion: Int, lista: List[Int]): List[Int] =
+    //Método para insertar en una lista de enteros un valor en una posición
+    def insertarEnFila(posicion: Int, numero: Int, lista: List[Int]): List[Int] =
       if (posicion == 0)
-        valor :: lista.tail
+        numero :: lista.tail
       else
-        lista.head :: poner(valor, posicion - 1, lista.tail)
+        lista.head :: insertarEnFila(posicion - 1, numero, lista.tail)
 
     //Método principal en el programa, usado para mover los números en el tablero con las restricciones de límite y movimiento en cruz.
     def intercambiar(xor: Int, yor: Int, xdes: Int, ydes: Int, matriz: List[List[Int]]): List[List[Int]] = {
@@ -110,20 +88,13 @@ object crush3 {
         val valorOr = leerElemento(xor, yor, matriz)
         val valorDes = leerElemento(xdes, ydes, matriz)
         //printf("Se cambia el valor %d por el valor %d \n", valorOr, valorDes)
-        poner(valorOr, posDes, poner(valorDes, posOr, matrizFlatten)).grouped(7).toList
+        insertarEnFila(posDes, valorOr, insertarEnFila(posOr, valorDes, matrizFlatten)).grouped(7).toList
       }
       else {
         print("¡Movimiento ilegal!") //Excepción que salta cuando se está intentando mover a una casilla no permita o inexistente.
         matriz
       }
     }
-
-    //Método para insertar en una lista de enteros un valor en una posición
-    def insertarEnFila(posicion: Int, numero: Int, lista: List[Int]): List[Int] =
-      if (posicion == 0)
-        numero :: lista.tail
-      else
-        lista.head :: insertarEnFila(posicion - 1, numero, lista.tail)
 
     //Función auxiliar para recalcularTablero. Recibe una coordenada y una matriz.Usada para recorrer el tablero.
     def recalcularTableroAux(x: Int, y: Int, indice: Int, matriz: List[List[Int]], matrizActual: List[List[Int]]): List[List[Int]] = {
@@ -293,7 +264,7 @@ object crush3 {
       if (listadejugadas == Nil)
         return mejorJugada :+ maximo //Devuelve una lista con la mejor jugadas y sus datos, y el valor de esta.
       val jugadaActual = listadejugadas.head
-      //println(jugadaActual)
+      print(jugadaActual)
       val matrizPostJugada = intercambiar(jugadaActual.head, jugadaActual.tail.head, jugadaActual.head, jugadaActual.tail.tail.head, matriz.grouped(7).toList)
       //imprimirMatriz(matrizPostJugada)
       val matrizPostJugadaRecalc = recalcularTableroZEROS(jugadaActual.head, jugadaActual.tail.tail.tail.head, matrizPostJugada)
@@ -301,6 +272,7 @@ object crush3 {
       val idoneas = calcularPosicionIdoneaHorizontal(matrizPostJugadaRecalc, 0).length
       val iguales = contarIgualesTablero(matrizPostJugadaRecalc, 0)
       val valordejugada = idoneas + iguales * 2
+      println("->Valor de jugada H " + valordejugada)
       if (valordejugada >= maximo) //Si el valor de la jugada analizada es mayor al anterior, cambia la mejorJugada y el maximo
         mejorMovimientoHorizontal(matriz, listadejugadas.tail, jugadaActual, valordejugada)
       else
@@ -312,7 +284,7 @@ object crush3 {
       if (listadejugadas == Nil)
         return mejorJugada :+ maximo //Devuelve una lista con la mejor jugadas y sus datos, y el valor de esta.
       val jugadaActual = listadejugadas.head
-      //println(jugadaActual)
+      print(jugadaActual)
       val matrizPostJugada = intercambiar(jugadaActual.head, jugadaActual.tail.head, jugadaActual.head + 1, jugadaActual.tail.tail.head, matriz.grouped(7).toList)
       //imprimirMatriz(matrizPostJugada) //Primero fila luego columna
       val matrizPostJugadaRecalc = recalcularTableroZEROS(jugadaActual.tail.tail.tail.tail.head, jugadaActual.tail.tail.tail.head, matrizPostJugada)
@@ -320,6 +292,7 @@ object crush3 {
       val idoneas = calcularPosicionIdoneaVertical(matrizPostJugadaRecalc.flatten, 0).length
       val iguales = contarIgualesTablero(matrizPostJugadaRecalc, 0)
       val valordejugada = idoneas + iguales * 2 //Probar y cambiar
+      println("->Valor de jugada V " + valordejugada)
       if (valordejugada >= maximo)
         mejorMovimientoVertical(matriz, listadejugadas.tail, jugadaActual, valordejugada)
       else
@@ -329,7 +302,7 @@ object crush3 {
     //Método que permite la introducción de datos para actualizar la matriz de manera manual.
     //El método intercambiar ya tiene limitado los posibles movimientos.( En cruz y límites tablero)
     def moverFicha(matriz: List[List[Int]]): List[List[Int]] = {
-      printf("Introduce la posicion para mover ficha:\n Fila Origen:")
+      printf("Introduce las coordenadas para mover ficha:\n Fila Origen:")
       val filaOr = readLine()
       printf("\n Columna Origen:")
       val columnaOr = readLine()
@@ -344,7 +317,7 @@ object crush3 {
     def jugar(matriz: List[List[Int]]): Unit = {
       if (matriz != Nil) {
 
-        print("¿Empezar nueva partida?             Si/No\n->")
+        print(">¿Empezar nueva partida?             Si/No\n==>")
         val respuesta = readLine()
 
         if (respuesta == "Si" || respuesta == "si" || respuesta == "SI") {
@@ -355,24 +328,23 @@ object crush3 {
         }
       }
       else
-        printf("Gracias por jugar, adiós")
+        printf("Adiós")
     }
 
     //Método recursivo que nos muestra las opciones de juego. Se basa en el uso de todos los métodos anteriores.
     def opciones(matriz: List[List[Int]]): List[List[Int]] = {
       if (matriz == Nil) {
         println("Saliendo...")
+        System.exit(0)
         Nil
       } else {
-        printf("*Si quiere mover ficha introduzca ---> M \n*Si quiere una pista introduzca ---> P \n->")
+        printf("\n>Si quiere mover ficha escriba --------------> M \n>Si quiere un movimiento óptimo escriba------> P \n>Si quiere salir del programa escriba--------> exit \n==>")
         val respuesta1 = readLine()
         if (respuesta1 == "M" || respuesta1 == "m") { // Si queremos intercambiar 2 valores
           opciones(moverFicha(matriz))
         } else if (respuesta1 == "p" || respuesta1 == "P") { // Si queremos que el ordenador nos muestre la mejor jugada y la aplique al tablero.
           val mejorMovV = mejorMovimientoVertical(matriz.flatten, calcularPosicionIdoneaVertical(matriz.flatten, 0), List(), 0)
-          println(mejorMovV)
           val mejorMovH = mejorMovimientoHorizontal(matriz.flatten, calcularPosicionIdoneaHorizontal(matriz, 0), List(), 0)
-          println(mejorMovH)
           if (mejorMovV == List(0) && mejorMovH == List(0)) { //Se puede dar el caso de que no haya jugadas idóneas en el tablero.
             println("No se han encontrado jugadas óptimas.")
             opciones(matriz)
@@ -395,8 +367,10 @@ object crush3 {
               "Se mueve el diamante de:[" + mejorMovV.head + "," + mejorMovV.tail.head + "] por [" + (mejorMovV.head + 1) + "," + mejorMovV.tail.tail.head + "]")
             opciones(actualizarTablero(intercambiar(mejorMovV.head, mejorMovV.tail.head, mejorMovV.head + 1, mejorMovV.tail.tail.head, matriz)))
           }
+        } else if (respuesta1 == "exit" || respuesta1 == "Exit" || respuesta1 == "EXIT") {
+          opciones(Nil)
         }
-        else if ((respuesta1 != "P") && (respuesta1 != "p") && (respuesta1 != "M") && (respuesta1 != "m")) {
+        else if (respuesta1 != "P" && respuesta1 != "p" && respuesta1 != "M" && respuesta1 != "m" && respuesta1 != "exit" && respuesta1 != "Exit" && respuesta1 != "EXIT") {
           println("Comando no reconocido, inténtelo de nuevo a continuación:")
           opciones(matriz)
         }
@@ -405,15 +379,24 @@ object crush3 {
     }
 
     var matriz = crearTablero(List[List[Int]](), 9)
-    //jugar(matriz)
-    imprimirMatriz(matriz)
-    println(calcularPosicionIdoneaHorizontal(matriz, 0))
-    println(calcularPosicionIdoneaVertical(matriz.flatten, 0))
+    jugar(matriz)
 
   }
+
 }
 
-
+/*
+    val matriz5: List[List[Int]] = List(
+      List(1, 1, 6, 6, 3, 4, 1),
+      List(6, 5, 3, 2, 4, 3, 4),
+      List(4, 3, 4, 5, 4, 3, 1),
+      List(1, 2, 4, 3, 2, 5, 3),
+      List(5, 2, 1, 6, 3, 6, 4),
+      List(6, 6, 3, 4, 5, 2, 4),
+      List(5, 5, 5, 5, 6, 2, 4),
+      List(5, 5, 5, 5, 3, 6, 5),
+      List(5, 4, 5, 5, 4, 2, 2))
+ */
 
 
 
